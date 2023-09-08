@@ -6,6 +6,8 @@ import os
 from datetime import datetime
 import PIL
 from PIL import Image, ImageGrab, ImageTk
+from tkinter import filedialog
+import csv
 
 class ScrollableFrame(tk.Frame):
     def __init__(self, container, *args, **kwargs):
@@ -45,6 +47,19 @@ class Model:
         self.col=0
         self.folder=''
         self.project=''
+    def Init(self):
+        self.type='' #unit | 1block | 2block | meshed
+        self.n=0
+        self.x=0.0
+        self.y=0.0
+        self.a=0.0
+        self.b=0.0
+        self.c=0.0
+        self.gravity=0
+        self.row=0
+        self.col=0
+        self.folder=''
+        self.project=''
 
 class Layer:
     def __init__(self, material='', thickness=0.0, modulus=0.0, cte=0.0, poisson=0.0, density=0.0, fill='', row=0, col=0):
@@ -70,16 +85,28 @@ class Part:
         self.density=0.0
 
 class LayerSQBC:
-    def __init__(self):
-        self.thickness=0.0
-        self.portion=0.0
-        self.modulus=0.0
-        self.cte=0.0
-        self.distance=0.0
-        self.color=''
-        self.fill=''
+    def __init__(self, thickness=0.0, portion=0.0, modulus=0.0, cte=0.0, distance=0.0, color='', fill=''):
+        self.thickness=thickness
+        self.portion=portion
+        self.modulus=modulus
+        self.cte=cte
+        self.distance=distance
+        self.color=color
+        self.fill=fill
 
-def selectmodel(event):
+    def Etd(self):
+        return self.modulus * self.thickness * self.distance
+    
+    def Et(self):
+        return self.modulus * self.thickness
+    
+    def AEt(self):
+        return self.cte * self.modulus * self.thickness
+
+def Init():
+    os.chdir(cwd)
+    model.Init()
+
     entry_nLayer.delete(0, tk.END)
     entry_x.delete(0, tk.END)
     entry_y.delete(0, tk.END)
@@ -90,6 +117,27 @@ def selectmodel(event):
     entry_col.delete(0, tk.END)
     entry_folder.delete(0, tk.END)
     check_gravity.deselect()
+    cb_customer.set('')
+    entry_modelname.delete(0, tk.END)
+    cb_structure.set('')
+
+    label_img_unit.place_forget()
+    label_img_1block.place_forget()
+    label_img_2block.place_forget()
+    label_img_meshed.place_forget()
+    label_a.place_forget()
+    entry_a.place_forget()
+    label_b.place_forget()
+    entry_b.place_forget()
+    label_c.place_forget()
+    entry_c.place_forget()
+    label_row.place_forget()
+    entry_row.place_forget()
+    label_col.place_forget()
+    entry_col.place_forget()
+    label_folder.place_forget()
+    entry_folder.place_forget()
+    check_gravity.place_forget()
 
     label_No.place_forget()
     label_Layer.place_forget()
@@ -111,7 +159,6 @@ def selectmodel(event):
     label_CTE_dummy.place_forget()          #col 15
     label_Poisson_dummy.place_forget()      #col 16
     label_Density_dummy.place_forget()      #col 17
-
 
     if len(list_No)>0:
         for i in range(len(list_No)):
@@ -203,71 +250,95 @@ def selectmodel(event):
             list_Density_dummy[i].grid_forget()
     del list_Density_dummy[0:]
 
+    if len(L)>0: del L[0:]
+    if len(Ls)>0: del Ls[0:]
+
+    label_nLayer.place_forget()
+    entry_nLayer.place_forget()
+    label_x.place_forget()
+    entry_x.place_forget()
+    label_y.place_forget()
+    entry_y.place_forget()
+
+    label_customer.place_forget()
+    cb_customer.place_forget()
+
+    label_modelname.place_forget()
+    entry_modelname.place_forget()
+
+    label_structure.place_forget()
+    cb_structure.place_forget()
+    
+    button_enter.place_forget()
+    button_calc.place_forget()
+    button_save_input.place_forget()
+    button_load_input.place_forget()
+
+    entry_project.delete(0,tk.END)
+    label_result_SQBC.config(text='')
+    label_result_warpage.config(text='')
+    label_result_CTE.config(text='')
+    label_result_modulus.config(text='')
+
+    check_SQBC.deselect()
+    check_warpage.deselect()
+    check_CTE.deselect()
+    check_modulus.deselect()
+    check_cpu.deselect()
+    check_gui.select()
+    check_job.select()
+
+    label_project.place_forget()
+    entry_project.place_forget()
+    button_SQBC.place_forget()
+    button_warpage.place_forget()
+    button_CTE.place_forget()
+    button_modulus.place_forget()
+    label_modeling.place_forget()
+    button_shell.place_forget()
+    button_solid.place_forget()
+
+    label_result_SQBC.place_forget()
+    label_result_warpage.place_forget()
+    label_result_CTE.place_forget()
+    label_result_modulus.place_forget()
+
+    button_result_SQBC.place_forget()
+    button_result_warpage.place_forget()
+    button_result_CTE.place_forget()
+    button_result_modulus.place_forget()
+
+    check_SQBC.place_forget()
+    check_warpage.place_forget()
+    check_CTE.place_forget()
+    check_modulus.place_forget()
+    check_cpu.place_forget()
+    check_gui.place_forget()
+    check_job.place_forget()
+
+
+def selectmodel(event):
+    Init()
     if cb_model.get()=="unit":
         label_img_unit.place(x=170, y=5, width=300, height=180)
-        label_img_1block.place_forget()
-        label_img_2block.place_forget()
-        label_img_meshed.place_forget()
-        label_a.place_forget()
-        entry_a.place_forget()
-        label_b.place_forget()
-        entry_b.place_forget()
-        label_c.place_forget()
-        entry_c.place_forget()
-        label_row.place_forget()
-        entry_row.place_forget()
-        label_col.place_forget()
-        entry_col.place_forget()
-        label_folder.place_forget()
-        entry_folder.place_forget()
-        check_gravity.place_forget()
     elif cb_model.get()=="1block":
-        label_img_unit.place_forget()
         label_img_1block.place(x=170, y=5, width=300, height=180)
-        label_img_2block.place_forget()
-        label_img_meshed.place_forget()
         label_a.place(x=15, y=130, width=50, height=20)
         entry_a.place(x=65, y=130, width=80, height=20)
         label_b.place(x=15, y=155, width=50, height=20)
         entry_b.place(x=65, y=155, width=80, height=20)
-        label_c.place_forget()
-        entry_c.place_forget()
-        label_row.place_forget()
-        entry_row.place_forget()
-        label_col.place_forget()
-        entry_col.place_forget()
-        label_folder.place_forget()
-        entry_folder.place_forget()
         check_gravity.place(x=30, y=180, width=70, height=20)
     elif cb_model.get()=='2block':
-        label_img_unit.place_forget()
-        label_img_1block.place_forget()
         label_img_2block.place(x=170, y=5, width=300, height=180)
-        label_img_meshed.place_forget()
         label_a.place(x=15, y=130, width=50, height=20)
         entry_a.place(x=65, y=130, width=80, height=20)
         label_b.place(x=15, y=155, width=50, height=20)
         entry_b.place(x=65, y=155, width=80, height=20)
         label_c.place(x=15, y=180, width=50, height=20)
         entry_c.place(x=65, y=180, width=80, height=20)
-        label_row.place_forget()
-        entry_row.place_forget()
-        label_col.place_forget()
-        entry_col.place_forget()
-        label_folder.place_forget()
-        entry_folder.place_forget()
         check_gravity.place(x=30, y=205, width=70, height=20)
     elif cb_model.get()=='meshed':
-        label_img_unit.place_forget()
-        label_img_1block.place_forget()
-        label_img_2block.place_forget()
         label_img_meshed.place(x=170, y=5, width=300, height=180)
-        label_a.place_forget()
-        entry_a.place_forget()
-        label_b.place_forget()
-        entry_b.place_forget()
-        label_c.place_forget()
-        entry_c.place_forget()
         entry_row.insert(0,'30')
         entry_col.insert(0,'30')
         label_row.place(x=15, y=130, width=50, height=20)
@@ -277,10 +348,6 @@ def selectmodel(event):
         label_folder.place(x=15, y=180, width=50, height=20)
         entry_folder.place(x=65, y=180, width=80, height=20)
         entry_folder.insert(0,'folder name')
-        check_gravity.place_forget()
-    else:
-        messagebox.showwarning(title="error",message="model")
-        return
     
     label_nLayer.place(x=15, y=55, width=50, height=20)
     entry_nLayer.place(x=65, y=55, width=80, height=20)
@@ -288,9 +355,15 @@ def selectmodel(event):
     entry_x.place(x=65, y=80, width=80, height=20)
     label_y.place(x=15, y=105, width=50, height=20)
     entry_y.place(x=65, y=105, width=80, height=20)
+
+    label_customer.place(x=15, y=230, width=50, height=20)
+    cb_customer.place(x=65, y=230, width=80, height=20)
+    label_modelname.place(x=15, y=255, width=50, height=20)
+    entry_modelname.place(x=65, y=255, width=80, height=20)
+    label_structure.place(x=15, y=280, width=50, height=20)
+    cb_structure.place(x=65, y=280, width=80, height=20)
     
-    button_enter.place(x=35, y=240, width=70, height=30)
-    button_calc.place_forget()
+    button_enter.place(x=35, y=320, width=70, height=30)
 
 def btnMClick(x,y): # x : Layer No.,  y : Material type
     def yview(*args):
@@ -576,6 +649,12 @@ def btnEnterClick():
     if (entry_nLayer.get()=='')|(entry_x.get()=='')|(entry_y.get()==''):
         messagebox.showwarning(title="error",message="층 수, x, y 입력")
         return
+    if (cb_customer.get()=='')|(cb_structure.get()==''):
+        messagebox.showwarning(title="error",message="고객사, 구조 선택")
+        return
+    if entry_modelname.get()=='':
+        messagebox.showwarning(title="error",message="모델명 입력")
+        return
     try:
         if int(entry_nLayer.get())<2:
             messagebox.showwarning(title="error",message="층 수 : 2 이상의 자연수")
@@ -598,12 +677,29 @@ def btnEnterClick():
         messagebox.showwarning(title="error",message="y")
         return
     
+    if int(entry_nLayer.get())==2:
+        if (cb_structure.get()=='Coreless_non')|(cb_structure.get()=='Coreless_rev'):
+            messagebox.showwarning(title="error",message="structure error (2L : Cored, ETS)")
+            return
+    elif int(entry_nLayer.get())%2==1:
+        if (cb_structure.get()=='Cored'):
+            messagebox.showwarning(title="error",message="structure error (odd number of layers can't be cored)")
+            return
+    
     if cb_model.get()=='unit':
         model.type='unit'
         model.n=int(entry_nLayer.get())
         model.x=float(entry_x.get())
         model.y=float(entry_y.get())
-        
+        model.a=0.0
+        model.b=0.0
+        model.c=0.0
+        model.gravity=0
+        model.row=0
+        model.col=0
+        model.folder=''
+        model.project=''
+
     elif cb_model.get()=="1block":
         if (entry_a.get()=='')|(entry_b.get()==''):
             messagebox.showwarning(title="error",message="a, b 입력")
@@ -629,6 +725,12 @@ def btnEnterClick():
         model.a=float(entry_a.get())
         model.b=float(entry_b.get())
         model.gravity=CheckG.get()
+
+        model.c=0.0
+        model.row=0
+        model.col=0
+        model.folder=''
+        model.project=''
 
     elif cb_model.get()=="2block":
         if (entry_a.get()=='')|(entry_b.get()=='')|(entry_c.get()==''):
@@ -667,6 +769,11 @@ def btnEnterClick():
         model.c=float(entry_c.get())
         model.gravity=CheckG.get()
 
+        model.row=0
+        model.col=0
+        model.folder=''
+        model.project=''
+
     elif cb_model.get()=="meshed":
         if (entry_row.get()=='')|(entry_col.get()=='')|(entry_folder.get()==''):
             messagebox.showwarning(title="error",message="row, col, folder명 입력")
@@ -692,6 +799,12 @@ def btnEnterClick():
         model.row=int(entry_row.get())
         model.col=int(entry_col.get())
         model.folder=cwd+'/'+entry_folder.get()
+
+        model.a=0.0
+        model.b=0.0
+        model.c=0.0
+        model.gravity=0
+        model.project=''
     
     label_No.place(x=170,y=200,width=30,height=40)
     label_Layer.place(x=200,y=200,width=47,height=40)
@@ -776,8 +889,68 @@ def btnEnterClick():
     del list_Fill[0:]
     for i in range(model.n):
         list_Fill.append(tkinter.ttk.Combobox(frame.scrollable_frame, width=5, values=['up','down'], state="readonly"))
-        list_Fill[i].set("up")
+        if cb_structure.get()=='ETS':
+            list_Fill[i].set("down")
+        elif cb_structure.get()=='Cored':
+            if i<(model.n/2): list_Fill[i].set("up")
+            else: list_Fill[i].set("down")
+        elif cb_structure.get()=='Coreless_non':
+            if i<(model.n/2): list_Fill[i].set("up")
+            else: list_Fill[i].set("down")
+        elif cb_structure.get()=='Coreless_rev':
+            if i<((model.n/2)-1): list_Fill[i].set("up")
+            else: list_Fill[i].set("down")
         list_Fill[i].grid(row=(2*i+1), column=7)
+    
+    #output list 제거
+    label_Modulus_unit.place_forget()       #col 10 - unit, 1block, 2block
+    label_CTE_unit.place_forget()           #col 11
+    label_Poisson_unit.place_forget()       #col 12
+    label_Density_unit.place_forget()       #col 13
+    label_Modulus_dummy.place_forget()      #col 14 - 1block, 2block
+    label_CTE_dummy.place_forget()          #col 15
+    label_Poisson_dummy.place_forget()      #col 16
+    label_Density_dummy.place_forget()      #col 17
+
+    if len(list_Modulus_unit)>0:
+        for i in range(len(list_Modulus_unit)):
+            list_Modulus_unit[i].grid_forget()
+    del list_Modulus_unit[0:]
+
+    if len(list_CTE_unit)>0:
+        for i in range(len(list_CTE_unit)):
+            list_CTE_unit[i].grid_forget()
+    del list_CTE_unit[0:]
+
+    if len(list_Poisson_unit)>0:
+        for i in range(len(list_Poisson_unit)):
+            list_Poisson_unit[i].grid_forget()
+    del list_Poisson_unit[0:]
+
+    if len(list_Density_unit)>0:
+        for i in range(len(list_Density_unit)):
+            list_Density_unit[i].grid_forget()
+    del list_Density_unit[0:]
+
+    if len(list_Modulus_dummy)>0:
+        for i in range(len(list_Modulus_dummy)):
+            list_Modulus_dummy[i].grid_forget()
+    del list_Modulus_dummy[0:]
+
+    if len(list_CTE_dummy)>0:
+        for i in range(len(list_CTE_dummy)):
+            list_CTE_dummy[i].grid_forget()
+    del list_CTE_dummy[0:]
+
+    if len(list_Poisson_dummy)>0:
+        for i in range(len(list_Poisson_dummy)):
+            list_Poisson_dummy[i].grid_forget()
+    del list_Poisson_dummy[0:]
+
+    if len(list_Density_dummy)>0:
+        for i in range(len(list_Density_dummy)):
+            list_Density_dummy[i].grid_forget()
+    del list_Density_dummy[0:]
 
     if model.type=='unit':
         label_Portion_unit.place(x=537,y=200,width=47,height=35)
@@ -835,12 +1008,89 @@ def btnEnterClick():
                 list_Portion_dummy[i].grid_forget()
         del list_Portion_dummy[0:]
 
-    button_calc.place(x=35, y=290, width=70, height=30)
+    button_calc.place(x=35, y=370, width=70, height=30)
+    button_save_input.place(x=35, y=450, width=70, height=30)
+    button_load_input.place(x=35, y=500, width=70, height=30)
+
+    entry_project.delete(0,tk.END)
+    label_result_SQBC.config(text='')
+    label_result_warpage.config(text='')
+    label_result_CTE.config(text='')
+    label_result_modulus.config(text='')
+
+    check_SQBC.deselect()
+    check_warpage.deselect()
+    check_CTE.deselect()
+    check_modulus.deselect()
+    check_cpu.deselect()
+    check_gui.select()
+    check_job.select()
+
+    label_project.place_forget()
+    entry_project.place_forget()
+    button_SQBC.place_forget()
+    button_warpage.place_forget()
+    button_CTE.place_forget()
+    button_modulus.place_forget()
+    label_modeling.place_forget()
+    button_shell.place_forget()
+    button_solid.place_forget()
+
+    label_result_SQBC.place_forget()
+    label_result_warpage.place_forget()
+    label_result_CTE.place_forget()
+    label_result_modulus.place_forget()
+
+    button_result_SQBC.place_forget()
+    button_result_warpage.place_forget()
+    button_result_CTE.place_forget()
+    button_result_modulus.place_forget()
+
+    check_SQBC.place_forget()
+    check_warpage.place_forget()
+    check_CTE.place_forget()
+    check_modulus.place_forget()
+    check_cpu.place_forget()
+    check_gui.place_forget()
+    check_job.place_forget()
     return
 
 def btnCalcClick():
     
-    #entry data validation 추가할 것
+    #input data(entry) validation
+    for i in range(2*model.n+1):
+        try:
+            if float(list_Thickness[i].get())<=0:
+                messagebox.showwarning(title="error",message="Thickness>0")
+                return
+            if float(list_Modulus[i].get())<=0:
+                messagebox.showwarning(title="error",message="Modulus>0")
+                return
+            if float(list_CTE[i].get())<=0:
+                messagebox.showwarning(title="error",message="CTE>0")
+                return
+            if (float(list_Poisson[i].get())<=-1)|(float(list_Poisson[i].get())>=0.5):
+                messagebox.showwarning(title="error",message="Poisson's ratio -1~0.5")
+                return
+            if float(list_Density[i].get())<=0:
+                messagebox.showwarning(title="error",message="Density>0")
+                return
+        except:
+            messagebox.showwarning(title="error",message="invalid data")
+            return
+    if model.type!='meshed':
+        for i in range(model.n+2):
+            try:
+                if (float(list_Portion_unit[i].get())<=0)|(float(list_Portion_unit[i].get())>100):
+                    messagebox.showwarning(title="error",message="portion 0~100")
+                    return  
+                if (model.type=='1block')|(model.type=='2block'):
+                    if (float(list_Portion_dummy[i].get())<=0)|(float(list_Portion_dummy[i].get())>100):
+                        messagebox.showwarning(title="error",message="portion 0~100")
+                        return  
+            except:
+                messagebox.showwarning(title="error",message="invalid data")
+                return
 
     label_Modulus_unit.place_forget()       #col 10 - unit, 1block, 2block
     label_CTE_unit.place_forget()           #col 11
@@ -864,7 +1114,7 @@ def btnCalcClick():
         for i in range(model.n-1):
             L.append(Layer('Cu', 0.001*float(list_Thickness[2*i+1].get()), float(list_Modulus[2*i+1].get()), float(list_CTE[2*i+1].get()), float(list_Poisson[2*i+1].get()), float(list_Density[2*i+1].get()), list_Fill[i].get()))
             L[2*i+1].unit.portion=float(list_Portion_unit[i+1].get())*0.01
-            
+
             L.append(Layer('PPG', 0.001*float(list_Thickness[2*i+2].get()), float(list_Modulus[2*i+2].get()), float(list_CTE[2*i+2].get()), float(list_Poisson[2*i+2].get()), float(list_Density[2*i+2].get())))
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get()))
@@ -888,7 +1138,7 @@ def btnCalcClick():
                 L[2*i+1].unit.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus
                 L[2*i+1].unit.poisson = L[2*i+1].poisson * L[2*i+1].unit.portion + L[2*i+2].poisson * (1-L[2*i+1].unit.portion)
                 L[2*i+1].unit.density = L[2*i+1].density * L[2*i+1].unit.portion + L[2*i+2].density * (1-L[2*i+1].unit.portion)
-
+            
         label_Modulus_unit.place(x=584,y=200,width=47,height=35)    #col10->9 584
         label_CTE_unit.place(x=631,y=200,width=47,height=35)        #col11->10 631
         label_Poisson_unit.place(x=678,y=200,width=47,height=35)    #col12->11 678
@@ -901,9 +1151,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Modulus_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Modulus_unit[i].insert(0,str(L[i].modulus))
+                list_Modulus_unit[i].insert(0,str(round(L[i].modulus)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Modulus_unit[i].insert(0,str(L[i].unit.modulus))
+                list_Modulus_unit[i].insert(0,str(round(L[i].unit.modulus)))
             list_Modulus_unit[i].grid(row=i, column=9)
         
         if len(list_CTE_unit)>0:
@@ -913,9 +1163,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_CTE_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_CTE_unit[i].insert(0,str(L[i].cte))
+                list_CTE_unit[i].insert(0,str(round(L[i].cte,2)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_CTE_unit[i].insert(0,str(L[i].unit.cte))
+                list_CTE_unit[i].insert(0,str(round(L[i].unit.cte,2)))
             list_CTE_unit[i].grid(row=i, column=10)
         
         if len(list_Poisson_unit)>0:
@@ -925,9 +1175,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Poisson_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Poisson_unit[i].insert(0,str(L[i].poisson))
+                list_Poisson_unit[i].insert(0,str(round(L[i].poisson,4)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Poisson_unit[i].insert(0,str(L[i].unit.poisson))
+                list_Poisson_unit[i].insert(0,str(round(L[i].unit.poisson,4)))
             list_Poisson_unit[i].grid(row=i, column=11)
         
         if len(list_Density_unit)>0:
@@ -937,9 +1187,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Density_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Density_unit[i].insert(0,str(L[i].density))
+                list_Density_unit[i].insert(0,str(round(L[i].density,3)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Density_unit[i].insert(0,str(L[i].unit.density))
+                list_Density_unit[i].insert(0,str(round(L[i].unit.density,3)))
             list_Density_unit[i].grid(row=i, column=12)
 
     elif (model.type=='1block')|(model.type=='2block'):
@@ -1022,9 +1272,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Modulus_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Modulus_unit[i].insert(0,str(L[i].modulus))
+                list_Modulus_unit[i].insert(0,str(round(L[i].modulus)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Modulus_unit[i].insert(0,str(L[i].unit.modulus))
+                list_Modulus_unit[i].insert(0,str(round(L[i].unit.modulus)))
             list_Modulus_unit[i].grid(row=i, column=10)
         
         if len(list_CTE_unit)>0:
@@ -1034,9 +1284,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_CTE_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_CTE_unit[i].insert(0,str(L[i].cte))
+                list_CTE_unit[i].insert(0,str(round(L[i].cte,2)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_CTE_unit[i].insert(0,str(L[i].unit.cte))
+                list_CTE_unit[i].insert(0,str(round(L[i].unit.cte,2)))
             list_CTE_unit[i].grid(row=i, column=11)
         
         if len(list_Poisson_unit)>0:
@@ -1046,9 +1296,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Poisson_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Poisson_unit[i].insert(0,str(L[i].poisson))
+                list_Poisson_unit[i].insert(0,str(round(L[i].poisson,4)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Poisson_unit[i].insert(0,str(L[i].unit.poisson))
+                list_Poisson_unit[i].insert(0,str(round(L[i].unit.poisson,4)))
             list_Poisson_unit[i].grid(row=i, column=12)
         
         if len(list_Density_unit)>0:
@@ -1058,9 +1308,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Density_unit.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Density_unit[i].insert(0,str(L[i].density))
+                list_Density_unit[i].insert(0,str(round(L[i].density,3)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Density_unit[i].insert(0,str(L[i].unit.density))
+                list_Density_unit[i].insert(0,str(round(L[i].unit.density,3)))
             list_Density_unit[i].grid(row=i, column=13)
 
         if len(list_Modulus_dummy)>0:
@@ -1070,9 +1320,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Modulus_dummy.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Modulus_dummy[i].insert(0,str(L[i].modulus))
+                list_Modulus_dummy[i].insert(0,str(round(L[i].modulus)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Modulus_dummy[i].insert(0,str(L[i].dummy.modulus))
+                list_Modulus_dummy[i].insert(0,str(round(L[i].dummy.modulus)))
             list_Modulus_dummy[i].grid(row=i, column=14)
         
         if len(list_CTE_dummy)>0:
@@ -1082,9 +1332,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_CTE_dummy.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_CTE_dummy[i].insert(0,str(L[i].cte))
+                list_CTE_dummy[i].insert(0,str(round(L[i].cte,2)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_CTE_dummy[i].insert(0,str(L[i].dummy.cte))
+                list_CTE_dummy[i].insert(0,str(round(L[i].dummy.cte,2)))
             list_CTE_dummy[i].grid(row=i, column=15)
         
         if len(list_Poisson_dummy)>0:
@@ -1094,9 +1344,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Poisson_dummy.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Poisson_dummy[i].insert(0,str(L[i].poisson))
+                list_Poisson_dummy[i].insert(0,str(round(L[i].poisson,4)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Poisson_dummy[i].insert(0,str(L[i].dummy.poisson))
+                list_Poisson_dummy[i].insert(0,str(round(L[i].dummy.poisson,4)))
             list_Poisson_dummy[i].grid(row=i, column=16)
         
         if len(list_Density_dummy)>0:
@@ -1106,9 +1356,9 @@ def btnCalcClick():
         for i in range(2*model.n+1):
             list_Density_dummy.append(tk.Entry(frame.scrollable_frame, width=6))
             if L[i].material=='PPG':
-                list_Density_dummy[i].insert(0,str(L[i].density))
+                list_Density_dummy[i].insert(0,str(round(L[i].density,3)))
             elif (L[i].material=='SR')|(L[i].material=='Cu'):
-                list_Density_dummy[i].insert(0,str(L[i].dummy.density))
+                list_Density_dummy[i].insert(0,str(round(L[i].dummy.density,3)))
             list_Density_dummy[i].grid(row=i, column=17) 
         
     elif model.type=='meshed':
@@ -1119,6 +1369,14 @@ def btnCalcClick():
                 text=''
                 text=f.readline().split()
                 for col in range(model.col):
+                    try:
+                        if (float(text[col])<0)|(float(text[col])>100):
+                            messagebox.showwarning(title="error",message="invalid data : portion(SR_top)")
+                            return
+                    except:
+                        messagebox.showwarning(title="error",message="invalid data : portion(SR_top)")
+                        return
+
                     L[0].section[row][col].portion=float(text[col])*0.01
                     if(L[0].section[row][col].portion)==0: #air
                         L[0].section[row][col].modulus=0.0001
@@ -1139,6 +1397,13 @@ def btnCalcClick():
                     text=''
                     text=f.readline().split()
                     for col in range(model.col):
+                        try:
+                            if (float(text[col])<0)|(float(text[col])>100):
+                                messagebox.showwarning(title="error",message="invalid data : portion(L"+str(i+1)+')')
+                                return
+                        except:
+                            messagebox.showwarning(title="error",message="invalid data : portion(L"+str(i+1)+')')
+                            return
                         L[2*i+1].section[row][col].portion=float(text[col])*0.01
             L.append(Layer('PPG', 0.001*float(list_Thickness[2*i+2].get()), float(list_Modulus[2*i+2].get()), float(list_CTE[2*i+2].get()), float(list_Poisson[2*i+2].get()), float(list_Density[2*i+2].get())))
 
@@ -1148,6 +1413,13 @@ def btnCalcClick():
                 text=''
                 text=f.readline().split()
                 for col in range(model.col):
+                    try:
+                        if (float(text[col])<0)|(float(text[col])>100):
+                            messagebox.showwarning(title="error",message="invalid data : portion(L"+str(model.n)+')')
+                            return
+                    except:
+                        messagebox.showwarning(title="error",message="invalid data : portion(L"+str(model.n)+')')
+                        return
                     L[2*model.n-1].section[row][col].portion=float(text[col])*0.01
 
         L.append(Layer('SR', 0.001*float(list_Thickness[2*model.n].get()), float(list_Modulus[2*model.n].get()), float(list_CTE[2*model.n].get()), float(list_Poisson[2*model.n].get()), float(list_Density[2*model.n].get()), row=model.row, col=model.col))
@@ -1156,6 +1428,13 @@ def btnCalcClick():
                 text=''
                 text=f.readline().split()
                 for col in range(model.col):
+                    try:
+                        if (float(text[col])<0)|(float(text[col])>100):
+                            messagebox.showwarning(title="error",message="invalid data : portion(SR_btm)")
+                            return
+                    except:
+                        messagebox.showwarning(title="error",message="invalid data : portion(SR_btm)")
+                        return
                     L[2*model.n].section[row][col].portion=float(text[col])*0.01
                     if(L[2*model.n].section[row][col].portion)==0: #air
                         L[2*model.n].section[row][col].modulus=0.0001
@@ -1181,7 +1460,7 @@ def btnCalcClick():
                         L[2*i+1].section[row][col].cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].section[row][col].portion)) / L[2*i+1].section[row][col].modulus
                         L[2*i+1].section[row][col].poisson = L[2*i+1].poisson * L[2*i+1].section[row][col].portion + L[2*i+2].poisson * (1-L[2*i+1].section[row][col].portion)
                         L[2*i+1].section[row][col].density = L[2*i+1].density * L[2*i+1].section[row][col].portion + L[2*i+2].density * (1-L[2*i+1].section[row][col].portion)
-        
+
         if len(list_Modulus_unit)>0:
             for i in range(len(list_Modulus_unit)):
                 list_Modulus_unit[i].grid_forget()
@@ -1229,20 +1508,36 @@ def btnCalcClick():
     entry_project.delete(0,tk.END)
     now=datetime.now()
     time=now.strftime("%Y%m%d_%H%M")
-    if CheckG.get()==0: entry_project.insert(0,time+'_'+str(model.n)+'L_'+model.type)
-    else:  entry_project.insert(0,time+'_'+str(model.n)+'L_'+model.type+'_Gr')
+    if CheckG.get()==0: entry_project.insert(0,time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type)
+    else:  entry_project.insert(0,time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type+'_Gr')
     
     button_SQBC.place(x=800, y=45, width=70, height=25)
+    label_result_SQBC.config(text='')
     label_result_SQBC.place(x=880, y=45, width=240, height=25)
-    
+    button_result_SQBC.place_forget()
+    check_SQBC.deselect()
+    check_SQBC.place_forget()
+
     button_warpage.place(x=800, y=80, width=70, height=25)
+    label_result_warpage.config(text='')
     label_result_warpage.place(x=880, y=80, width=240, height=25)
+    button_result_warpage.place_forget()
+    check_warpage.deselect()
+    check_warpage.place_forget()
     
     button_CTE.place(x=800, y=115, width=70, height=25)
+    label_result_CTE.config(text='')
     label_result_CTE.place(x=880, y=115, width=240, height=25)
+    button_result_CTE.place_forget()
+    check_CTE.deselect()
+    check_CTE.place_forget()
     
     button_modulus.place(x=800, y=150, width=70, height=25)
+    label_result_modulus.config(text='')
     label_result_modulus.place(x=880, y=150, width=240, height=25)
+    button_result_modulus.place_forget()
+    check_modulus.deselect()
+    check_modulus.place_forget()
     
     label_modeling.place(x=1200, y=10, width=70, height=25)
     button_shell.place(x=1200, y=45, width=70, height=25)
@@ -1257,15 +1552,719 @@ def btnCalcClick():
 
     return
 
+def updatedata():
+    for i in range(2*model.n+1):
+        try:
+            if float(list_Thickness[i].get())<=0:
+                messagebox.showwarning(title="error",message="Thickness>0")
+                return False
+            else: L[i].thickness=float(list_Thickness[i].get())*0.001
+        except:
+            messagebox.showwarning(title="error",message="invalid data (Thickness)")
+            return False
+    if model.type!='meshed':
+        for i in range(2*model.n+1):
+            try:
+                if float(list_Modulus_unit[i].get())<=0:
+                    messagebox.showwarning(title="error",message="Modulus>0")
+                    return False
+                else: L[i].unit.modulus=float(list_Modulus_unit[i].get())
+                if float(list_CTE_unit[i].get())<=0:
+                    messagebox.showwarning(title="error",message="CTE>0")
+                    return False
+                else: L[i].unit.cte=float(list_CTE_unit[i].get())
+                
+                if (float(list_Poisson_unit[i].get())<=-1)|(float(list_Poisson_unit[i].get())>=0.5):
+                    messagebox.showwarning(title="error",message="Poisson's ratio -1~0.5")
+                    return False
+                else: L[i].unit.poisson=float(list_Poisson_unit[i].get())
+                
+                if float(list_Density_unit[i].get())<=0:
+                    messagebox.showwarning(title="error",message="Density>0")
+                    return False
+                else: L[i].unit.density=float(list_Density_unit[i].get())
+
+                if (model.type=='1block')|(model.type=='2block'):
+                    if float(list_Modulus_dummy[i].get())<=0:
+                        messagebox.showwarning(title="error",message="Modulus>0")
+                        return False
+                    else: L[i].dummy.modulus=float(list_Modulus_dummy[i].get())
+
+                    if float(list_CTE_dummy[i].get())<=0:
+                        messagebox.showwarning(title="error",message="CTE>0")
+                        return False
+                    else: L[i].dummy.cte=float(list_CTE_dummy[i].get())
+                    
+                    if (float(list_Poisson_dummy[i].get())<=-1)|(float(list_Poisson_dummy[i].get())>=0.5):
+                        messagebox.showwarning(title="error",message="Poisson's ratio -1~0.5")
+                        return False
+                    else: L[i].dummy.poisson=float(list_Poisson_dummy[i].get())
+                    
+                    if float(list_Density_dummy[i].get())<=0:
+                        messagebox.showwarning(title="error",message="Density>0")
+                        return False
+                    else: L[i].dummy.density=float(list_Density_dummy[i].get())
+            except:
+                messagebox.showwarning(title="error",message="invalid data")
+                return False
+    return True
 
 def btnSQBCClick():
+
+    def capture():
+        x1=winSQBC.winfo_rootx()*1.25
+        y1=winSQBC.winfo_rooty()*1.25 + 31*1.25
+        x2=winSQBC.winfo_width()*1.25 + x1
+        y2=winSQBC.winfo_rooty()*1.25 + winSQBC.winfo_height()*1.25
+        box=(x1+1,y1+1,x2-1,y2-1)
+
+        img_SQBC=ImageGrab.grab(box)
+        img_SQBC.save('D:/AbaqusSim/%s/SQBC/%s_SQBC.png' % (model.project, model.project))
+        #img_SQBC.save('D:/AbaqusSim/%s/SQBC/%s_SQBC.png' % (model.project, model.project),"PDF",resolution=100.0,save_all=True)
+
     if entry_project.get()=='':
         messagebox.showwarning(title="error",message="Enter project name.")
         return
     model.project=entry_project.get()
-    return
+
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
+    
+    if model.type=='unit':    
+        del Ls[0:]
+        for i in range(2*model.n+1):
+            if (i==0): #SR_top
+                Ls.append(LayerSQBC(L[i].thickness, L[i].unit.portion, L[i].unit.modulus, L[i].unit.cte, 0.0, '#1ddb16'))
+            elif i==2*model.n: #SR_btm
+                Ls.append(LayerSQBC(L[i].thickness, L[i].unit.portion, L[i].unit.modulus, L[i].unit.cte, 0.0, '#1ddb16'))
+            elif i%2==1: #Cu
+                Ls.append(LayerSQBC(L[i].thickness, L[i].unit.portion, L[i].unit.modulus, L[i].unit.cte, 0.0, '#ffbb00', L[i].fill))
+            elif i%2==0: #PPG
+                if i%4==0: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#8c8c8c'))
+                else: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#c8c8c8'))
+
+    elif (model.type=='1block')|(model.type=='2block'):
+        Stotal=model.x*model.y
+        Sunit=(model.x-2*model.b-model.c)*(model.y-2*model.a)
+        Sdummy=Stotal-Sunit
+        Pu=Sunit/Stotal
+        Pd=Sdummy/Stotal
+
+        del Ls[0:]
+        for i in range(2*model.n+1):
+            if (i==0): #SR_top
+                portion=L[i].unit.portion*Pu + L[i].dummy.portion*Pd
+                modulus=L[i].unit.modulus*Pu + L[i].dummy.modulus*Pd
+                cte=(L[i].unit.cte * L[i].unit.modulus * Pu + L[i].dummy.cte * L[i].dummy.modulus * Pd) / modulus
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#1ddb16'))
+            elif i==2*model.n: #SR_btm
+                portion=L[i].unit.portion*Pu + L[i].dummy.portion*Pd
+                modulus=L[i].unit.modulus*Pu + L[i].dummy.modulus*Pd
+                cte=(L[i].unit.cte * L[i].unit.modulus * Pu + L[i].dummy.cte * L[i].dummy.modulus * Pd) / modulus
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#1ddb16'))
+            elif i%2==1: #Cu
+                portion=L[i].unit.portion*Pu + L[i].dummy.portion*Pd
+                modulus=L[i].unit.modulus*Pu + L[i].dummy.modulus*Pd
+                cte=(L[i].unit.cte * L[i].unit.modulus * Pu + L[i].dummy.cte * L[i].dummy.modulus * Pd) / modulus
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#ffbb00', L[i].fill))
+            elif i%2==0: #PPG
+                if i%4==0: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#8c8c8c'))
+                else: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#c8c8c8'))
+
+    elif model.type=='meshed':    
+        del Ls[0:]
+        for i in range(2*model.n+1):
+            if (i==0)|(i==2*model.n)|(i%2==1):
+                portion=0.0
+                modulus=0.0
+                cte=0.0
+                for row in range(model.row):
+                    for col in range(model.col):
+                        portion=portion+L[i].section[row][col].portion
+                        modulus=modulus+L[i].section[row][col].modulus
+                        cte=cte + L[i].section[row][col].cte * L[i].section[row][col].modulus
+                portion=portion/(model.row*model.col)
+                cte=cte/modulus
+                modulus=modulus/(model.row*model.col)
+                
+            if (i==0): #SR_top
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#1ddb16'))
+            elif i==2*model.n: #SR_btm
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#1ddb16'))
+            elif i%2==1: #Cu
+                Ls.append(LayerSQBC(L[i].thickness, portion, modulus, cte, 0.0, '#ffbb00', L[i].fill))
+            elif i%2==0: #PPG
+                if i%4==0: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#8c8c8c'))
+                else: Ls.append(LayerSQBC(L[i].thickness, 0.0, L[i].modulus, L[i].cte, 0.0, '#c8c8c8'))
+    
+    if os.path.exists('D:/AbaqusSim')==False:
+        os.mkdir('D:/AbaqusSim')
+    
+    if os.path.exists('D:/AbaqusSim/%s' % model.project)==False:
+        os.mkdir('D:/AbaqusSim/%s' % model.project)
+    
+    if os.path.exists('D:/AbaqusSim/%s/SQBC' % model.project)==False:
+        os.mkdir('D:/AbaqusSim/%s/SQBC' % model.project)
+    
+    SaveInput('D:/AbaqusSim/%s/SQBC' % model.project)
+
+    winSQBC=tk.Toplevel(win, bg='white')
+    winSQBC.title('SQBC')
+    winSQBC.geometry("700x470+150+70")
+
+    button_capture_SQBC=tk.Button(winSQBC,text="capture",command=capture)
+    button_capture_SQBC.place(x=325,y=5,width=50,height=25)
+
+    label_title_SQBC=tk.Label(winSQBC,text="%s SQBC result" % (model.project), bg='white')
+    label_title_SQBC.place(x=50,y=50,width=600,height=25)
+
+    label_NA=tk.Label(winSQBC, text="NA from top : ", anchor='w', bg='white')
+    label_ttot=tk.Label(winSQBC, text="total thickness : ", anchor='w', bg='white')
+    label_NAttot=tk.Label(winSQBC, text="NA/total thickness : ", anchor='w', bg='white')
+    label_Modulus_upper=tk.Label(winSQBC, text="Modulus upper : ", anchor='w', bg='white')
+    label_Modulus_lower=tk.Label(winSQBC, text="Modulus lower : ", anchor='w', bg='white')
+    label_CTE_upper=tk.Label(winSQBC, text="CTE upper : ", anchor='w', bg='white')
+    label_CTE_lower=tk.Label(winSQBC, text="CTE lower : ", anchor='w', bg='white')
+    label_delta_CTE=tk.Label(winSQBC, text="ΔCTE : ", anchor='w', bg='white')
+    label_warpage=tk.Label(winSQBC, text="warpage : ", anchor='w', bg='white')
+    label_description=tk.Label(winSQBC, text="(ΔCTE>0 : smile, ΔCTE<0 : crying)", anchor='w', bg='white')
+    
+    label_vNA=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vttot=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vNAttot=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vModulus_upper=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vModulus_lower=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vCTE_upper=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vCTE_lower=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vdelta_CTE=tk.Label(winSQBC, anchor='w', bg='white')
+    label_vwarpage=tk.Label(winSQBC, anchor='w', bg='white')
+
+    label_NA.place(x=470, y=100, width=120, height=20)
+    label_ttot.place(x=470, y=125, width=120, height=20)
+    label_NAttot.place(x=470, y=150, width=120, height=20)
+    label_Modulus_upper.place(x=470, y=180, width=120, height=20)
+    label_Modulus_lower.place(x=470, y=205, width=120, height=20)
+    label_CTE_upper.place(x=470, y=235, width=120, height=20)
+    label_CTE_lower.place(x=470, y=260, width=120, height=20)
+    label_delta_CTE.place(x=470, y=285, width=120, height=20)
+    label_warpage.place(x=470, y=320, width=120, height=20)
+    
+    label_vNA.place(x=590, y=100, width=80, height=20)
+    label_vttot.place(x=590, y=125, width=80, height=20)
+    label_vNAttot.place(x=590, y=150, width=80, height=20)
+    label_vModulus_upper.place(x=590, y=180, width=80, height=20)
+    label_vModulus_lower.place(x=590, y=205, width=80, height=20)
+    label_vCTE_upper.place(x=590, y=235, width=80, height=20)
+    label_vCTE_lower.place(x=590, y=260, width=80, height=20)
+    label_vdelta_CTE.place(x=590, y=285, width=80, height=20)
+    label_vwarpage.place(x=590, y=320, width=80, height=20)
+
+    label_description.place(x=470, y=345, width=200, height=20)
+
+    canvas=tk.Canvas(winSQBC, relief="solid", bg="white", bd=1)
+    w=400
+    h=300
+
+    ttot = 0
+    for i in range(2*model.n+1):
+        ttot = ttot + Ls[i].thickness
+    cent = ttot/2
+    Ls[0].distance = cent - Ls[0].thickness/2
+    for i in range(1,2*model.n+1):
+        Ls[i].distance = Ls[i-1].distance - (Ls[i-1].thickness + Ls[i].thickness)/2
+    num=0
+    den=0
+    for i in range(2*model.n+1):
+        num = num + Ls[i].Etd()
+        den = den + Ls[i].Et()
+    offset=num/den
+    NA=cent-offset
+
+    num = 0
+    den = 0
+    layer_bot_bound = 0
+    layer_top_bound = 0
+    for i in range(2*model.n+1):
+        layer_bot_bound = layer_bot_bound + Ls[i].thickness
+        layer_top_bound = layer_bot_bound - Ls[i].thickness
+        if (layer_bot_bound <= NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].Et()
+            den = den + Ls[i].thickness
+        elif (layer_bot_bound > NA) & (layer_top_bound < NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].modulus * (NA - layer_top_bound)
+            den = den + (NA - layer_top_bound)
+    modulus_upper = num / den
+
+    num = 0
+    den = 0
+    layer_bot_bound = 0
+    layer_top_bound = 0
+    for i in range(2*model.n+1):
+        layer_bot_bound = layer_bot_bound + Ls[i].thickness
+        layer_top_bound = layer_bot_bound - Ls[i].thickness
+        if (layer_top_bound < NA) & (layer_bot_bound > NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].modulus * (layer_bot_bound - NA)
+            den = den + (layer_bot_bound - NA)
+        elif (layer_top_bound >= NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].Et()
+            den = den + Ls[i].thickness
+    modulus_lower = num / den
+
+    num = 0
+    den = 0
+    layer_bot_bound = 0
+    layer_top_bound = 0
+    for i in range(2*model.n+1):
+        layer_bot_bound = layer_bot_bound + Ls[i].thickness
+        layer_top_bound = layer_bot_bound - Ls[i].thickness
+        if (layer_bot_bound <= NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].AEt()
+            den = den + Ls[i].Et()
+        elif (layer_bot_bound > NA) & (layer_top_bound < NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].cte * Ls[i].modulus * (NA - layer_top_bound)
+            den = den + Ls[i].modulus * (NA - layer_top_bound)
+    CTE_upper = num / den
+
+    num = 0
+    den = 0
+    layer_bot_bound = 0
+    layer_top_bound = 0
+    for i in range(2*model.n+1):
+        layer_bot_bound = layer_bot_bound + Ls[i].thickness
+        layer_top_bound = layer_bot_bound - Ls[i].thickness
+        if (layer_top_bound < NA) & (layer_bot_bound > NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].cte * Ls[i].modulus * (layer_bot_bound - NA)
+            den = den + Ls[i].modulus * (layer_bot_bound - NA)
+        elif (layer_top_bound >= NA) & (Ls[i].thickness > 0) :
+            num = num + Ls[i].AEt()
+            den = den + Ls[i].Et()
+    CTE_lower = num / den
+
+    scale = 200/ttot
+    t=list()
+    for i in range(2*model.n+1):
+        t.append(Ls[i].thickness * scale)
+
+    """
+    # 2L : Cored | ETS
+    # 3L : Coreless_non | Coreless_rev | "ETS
+    # 4L : Cored | Coreless_non | Coreless_rev | ETS
+    # 5L : Coreless_non | Coreless_rev | ETS
+    if n==2:
+        if ss=='Cored':
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2], 350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=='ETS':
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2], 350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        else:
+            return
+    
+    elif n==3:
+        if ss=="Coreless_non":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2]+t[3],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="Coreless_rev":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="ETS":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        else:
+            return
+    
+    elif n==4:
+        if ss=="Cored":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2]+t[3],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="Coreless_non":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2]+t[3],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="Coreless_rev":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="ETS":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        else:
+            return
+    elif n==5:
+        if ss=="Coreless_non":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2]+t[3],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=PPG4.color,outline=PPG4.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            canvas.create_rectangle(200-150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 200+150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9],fill=L5.color,outline=L5.color)
+
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="PPG4")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]/2,text="L5 ("+str(round(L5.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="Coreless_rev":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0]+t[1],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0]+t[1],350,50+t[0]+t[1]+t[2]+t[3],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=PPG4.color,outline=PPG4.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            canvas.create_rectangle(200-150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 200+150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9],fill=L5.color,outline=L5.color)
+
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="PPG4")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]/2,text="L5 ("+str(round(L5.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        elif ss=="ETS":
+            canvas.create_rectangle(50,50, 50+150*SR_top.portion,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(350-150*SR_top.portion,50, 350,50+t[0],fill=SR_top.color,outline=SR_top.color)
+            canvas.create_rectangle(50,50+t[0],350,50+t[0]+t[1]+t[2],fill=PPG1.color,outline=PPG1.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2],350,50+t[0]+t[1]+t[2]+t[3]+t[4],fill=PPG2.color,outline=PPG2.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],fill=PPG3.color,outline=PPG3.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6],350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8],fill=PPG4.color,outline=PPG4.color)
+            canvas.create_rectangle(50,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 50+150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(350-150*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 350,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10],fill=SR_btm.color,outline=SR_btm.color)
+            canvas.create_rectangle(200-150*L1.portion,50+t[0], 200+150*L1.portion,50+t[0]+t[1],fill=L1.color,outline=L1.color)
+            canvas.create_rectangle(200-150*L2.portion,50+t[0]+t[1]+t[2], 200+150*L2.portion,50+t[0]+t[1]+t[2]+t[3],fill=L2.color,outline=L2.color)
+            canvas.create_rectangle(200-150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4], 200+150*L3.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5],fill=L3.color,outline=L3.color)
+            canvas.create_rectangle(200-150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6], 200+150*L4.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7],fill=L4.color,outline=L4.color)
+            canvas.create_rectangle(200-150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8], 200+150*L5.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9],fill=L5.color,outline=L5.color)
+
+            canvas.create_text(50+75*SR_top.portion,50+t[0]/2,text="SR top ("+str(round(SR_top.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]/2,text="L1 ("+str(round(L1.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]/2,text="PPG1")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]/2,text="L2 ("+str(round(L2.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]/2,text="PPG2")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]/2,text="L3 ("+str(round(L3.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]/2,text="PPG3")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]/2,text="L4 ("+str(round(L4.portion*100,0))+'%)')
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]/2,text="PPG4")
+            canvas.create_text(200,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]/2,text="L5 ("+str(round(L5.portion*100,0))+'%)')
+            canvas.create_text(50+75*SR_btm.portion,50+t[0]+t[1]+t[2]+t[3]+t[4]+t[5]+t[6]+t[7]+t[8]+t[9]+t[10]/2,text="SR btm ("+str(round(SR_btm.portion*100,0))+'%)')
+        else:
+            return
+    """
+    
+    canvas.create_line(50,50,350,50,350,250,50,250,50,50,fill="black") #structure
+        
+    dy=0
+    for i in range(2*model.n):
+        dy=dy+t[i]
+        canvas.create_line(50,50+dy,350,50+dy,fill="black")
+    
+
+    label_dNA=tk.Label(winSQBC, text="NA (Neutral Axis, 중립축) : "+str(round(NA,3)), bg='white', anchor='w', fg='red')
+    label_dCA=tk.Label(winSQBC, text="CA (Central Axis, 중심축) : "+str(round(ttot/2,3)), bg='white', anchor='w', fg='blue')
+
+    canvas.create_line(0,50+NA*scale,w,50+NA*scale,fill="red") #NA
+    canvas.create_line(0,h/2,w,h/2,fill="blue",dash=(2,1)) #CA
+
+    if NA<=(ttot/2):
+        canvas.create_text(w-15,50+NA*scale-10,text="NA",fill='red')
+        canvas.create_text(0+15,h/2+10,text="CA",fill='blue')
+        label_dNA.place(x=130, y=100+h+5, width=280, height=20)
+        label_dCA.place(x=130, y=100+h+5+20+3, width=280, height=20)
+    else:
+        canvas.create_text(w-15,50+NA*scale+10,text="NA",fill='red')
+        canvas.create_text(0+15,h/2-10,text="CA",fill='blue')
+        label_dCA.place(x=130, y=100+h+5, width=280, height=20)
+        label_dNA.place(x=130, y=100+h+5+20+3, width=280, height=20)
+
+    canvas.place(x=25, y=100, width=w, height=h)
+
+    if CTE_upper>CTE_lower: sc="smile"
+    elif CTE_upper<CTE_lower: sc="crying"
+    else : sc="flat"
+
+    label_vNA.config(text=str(round(NA,3)))
+    label_vttot.config(text=str(round(ttot,3)))
+    label_vNAttot.config(text=str(round(NA/ttot,4)))
+    label_vModulus_upper.config(text=str(round(modulus_upper*0.001,2))+' GPa')
+    label_vModulus_lower.config(text=str(round(modulus_lower*0.001,2))+' GPa')
+    label_vCTE_upper.config(text=str(round(CTE_upper,3)))
+    label_vCTE_lower.config(text=str(round(CTE_lower,3)))
+    label_vdelta_CTE.config(text=str(round(CTE_upper-CTE_lower,3)))
+    label_vwarpage.config(text=sc)
+
+    label_result_SQBC.config(text='E('+str(round(modulus_upper*0.001,2))+'/'+str(round(modulus_lower*0.001,2))+'), α('+str(round(CTE_upper,2))+'/'+str(round(CTE_lower,2))+'), '+sc)
+    button_result_SQBC.place(x=1130, y=45, width=40, height=25)
+    check_SQBC.place(x=1180, y=45, width=15, height=25)
+
+    try:
+        f=open('D:/AbaqusSim/%s/SQBC/%s_SQBC_result.txt' % (model.project, model.project),'w')
+    except:
+        messagebox.showwarning(title="error",message="Failed to open result file")
+        return
+    f.write('NA from top : %s\n' % str(round(NA,3)))
+    f.write('total thickness : %s\n' % str(round(ttot,3)))
+    f.write('NA/total : %s\n' % str(round(NA/ttot,4)))
+    f.write('Modulus upper[GPa] : %s\n' % str(round(modulus_upper*0.001,2)))
+    f.write('Modulus lower[GPa] : %s\n' % str(round(modulus_lower*0.001,2)))
+    f.write('CTE upper : %s\n' % str(round(CTE_upper,3)))
+    f.write('CTE lower : %s\n' % str(round(CTE_lower,3)))
+    f.write('ΔCTE : %s\n' % str(round(CTE_upper-CTE_lower,3)))
+    f.write('warpage : %s\n' % (sc))
+    f.close()
 
 def btnResultSQBCClick():
+    try:
+        f=open('D:/AbaqusSim/%s/SQBC/%s_SQBC_result.txt' % (model.project, model.project),'r')
+    except:
+        messagebox.showwarning(title="error",message="Failed to open result file")
+        return
+
+    winSQBC=tk.Toplevel(win, bg='white')
+    winSQBC.title('SQBC result')
+    winSQBC.geometry("700x470+150+70")
+
+    label_title_SQBC=tk.Label(winSQBC,text="%s SQBC result" % (model.project), bg='white')
+    label_title_SQBC.place(x=50,y=50,width=600,height=25)
+
+    label_NA=tk.Label(winSQBC, text="NA from top : ", anchor='w', bg='white')
+    label_ttot=tk.Label(winSQBC, text="total thickness : ", anchor='w', bg='white')
+    label_NAttot=tk.Label(winSQBC, text="NA/total thickness : ", anchor='w', bg='white')
+    label_Modulus_upper=tk.Label(winSQBC, text="Modulus upper : ", anchor='w', bg='white')
+    label_Modulus_lower=tk.Label(winSQBC, text="Modulus lower : ", anchor='w', bg='white')
+    label_CTE_upper=tk.Label(winSQBC, text="CTE upper : ", anchor='w', bg='white')
+    label_CTE_lower=tk.Label(winSQBC, text="CTE lower : ", anchor='w', bg='white')
+    label_delta_CTE=tk.Label(winSQBC, text="ΔCTE : ", anchor='w', bg='white')
+    label_warpage=tk.Label(winSQBC, text="warpage : ", anchor='w', bg='white')
+    label_description=tk.Label(winSQBC, text="(ΔCTE>0 : smile, ΔCTE<0 : crying)", anchor='w', bg='white')
+    
+    label_vNA=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vttot=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vNAttot=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vModulus_upper=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip()+' GPa', anchor='w', bg='white')
+    label_vModulus_lower=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip()+' GPa', anchor='w', bg='white')
+    label_vCTE_upper=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vCTE_lower=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vdelta_CTE=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+    label_vwarpage=tk.Label(winSQBC, text=f.readline().split(sep=':')[1].strip(), anchor='w', bg='white')
+
+    label_NA.place(x=470, y=100, width=120, height=20)
+    label_ttot.place(x=470, y=125, width=120, height=20)
+    label_NAttot.place(x=470, y=150, width=120, height=20)
+    label_Modulus_upper.place(x=470, y=180, width=120, height=20)
+    label_Modulus_lower.place(x=470, y=205, width=120, height=20)
+    label_CTE_upper.place(x=470, y=235, width=120, height=20)
+    label_CTE_lower.place(x=470, y=260, width=120, height=20)
+    label_delta_CTE.place(x=470, y=285, width=120, height=20)
+    label_warpage.place(x=470, y=320, width=120, height=20)
+    
+    label_vNA.place(x=590, y=100, width=80, height=20)
+    label_vttot.place(x=590, y=125, width=80, height=20)
+    label_vNAttot.place(x=590, y=150, width=80, height=20)
+    label_vModulus_upper.place(x=590, y=180, width=80, height=20)
+    label_vModulus_lower.place(x=590, y=205, width=80, height=20)
+    label_vCTE_upper.place(x=590, y=235, width=80, height=20)
+    label_vCTE_lower.place(x=590, y=260, width=80, height=20)
+    label_vdelta_CTE.place(x=590, y=285, width=80, height=20)
+    label_vwarpage.place(x=590, y=320, width=80, height=20)
+
+    label_description.place(x=470, y=345, width=200, height=20)
+
+    canvas=tk.Canvas(winSQBC, relief="solid", bg="white", bd=1)
+    w=400
+    h=300
+    canvas.create_line(50,50,350,50,350,250,50,250,50,50,fill="black") #structure
+
+    ttot=float(label_vttot['text'])
+    NA=float(label_vNA['text'])
+
+    scale = 200/ttot
+
+    dy=0
+    for i in range(2*model.n):
+        dy=dy+Ls[i].thickness*scale
+        canvas.create_line(50,50+dy,350,50+dy,fill="black")
+    
+
+    label_dNA=tk.Label(winSQBC, text="NA (Neutral Axis, 중립축) : "+str(round(NA,3)), bg='white', anchor='w', fg='red')
+    label_dCA=tk.Label(winSQBC, text="CA (Central Axis, 중심축) : "+str(round(ttot/2,3)), bg='white', anchor='w', fg='blue')
+
+    canvas.create_line(0,50+NA*scale,w,50+NA*scale,fill="red") #NA
+    canvas.create_line(0,h/2,w,h/2,fill="blue",dash=(2,1)) #CA
+
+    if NA<=(ttot/2):
+        canvas.create_text(w-15,50+NA*scale-10,text="NA",fill='red')
+        canvas.create_text(0+15,h/2+10,text="CA",fill='blue')
+        label_dNA.place(x=130, y=100+h+5, width=280, height=20)
+        label_dCA.place(x=130, y=100+h+5+20+3, width=280, height=20)
+    else:
+        canvas.create_text(w-15,50+NA*scale+10,text="NA",fill='red')
+        canvas.create_text(0+15,h/2-10,text="CA",fill='blue')
+        label_dCA.place(x=130, y=100+h+5, width=280, height=20)
+        label_dNA.place(x=130, y=100+h+5+20+3, width=280, height=20)
+
+    canvas.place(x=25, y=100, width=w, height=h)
     return
 
 def writescript(): #unit, 1block, 2block, meshed
@@ -1743,7 +2742,7 @@ def writescript(): #unit, 1block, 2block, meshed
         f.write("elif (z3<((strMinMax['maxValue']+strMinMax['minValue'])/2)): warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='crying'\n")
         f.write("else: warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='none'\n")
     f.write("f.write('warpage : '+str(round(warpage,3))+'\\n'+sc)\n")
-    f.write("f.close\n")
+    f.write("f.close()\n")
     return True
 
 def btnWarpageClick():
@@ -1751,6 +2750,10 @@ def btnWarpageClick():
         messagebox.showwarning(title="error",message="Enter project name.")
         return
     model.project=entry_project.get()
+
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
 
     if os.path.exists('D:/AbaqusSim')==False:
         os.mkdir('D:/AbaqusSim')
@@ -1762,6 +2765,8 @@ def btnWarpageClick():
         os.mkdir('D:/AbaqusSim/%s/Warpage' % model.project)
 
     os.chdir('D:/AbaqusSim/%s/Warpage' % model.project)
+
+    SaveInput('D:/AbaqusSim/%s/Warpage' % model.project)
 
     if writescript()==False:
         messagebox.showwarning(title="error",message="failed to write script (Warpage)")
@@ -1780,7 +2785,7 @@ def btnWarpageClick():
         f.readline()
         result=f.readline().strip()
         sc=f.readline().strip()
-        f.close
+        f.close()
         
         label_result_warpage.config(text=result+' ('+sc+')')
         button_result_warpage.place(x=1130, y=80, width=40, height=25)
@@ -1792,6 +2797,36 @@ def btnWarpageClick():
     return
 
 def btnResultWarpageClick():
+    try:
+        f=open("D:/AbaqusSim/%s/Warpage/%s_result.txt" % (model.project,model.project),'r')
+    except:
+        messagebox.showwarning(title="error",message="failed to open result file (Warpage)")
+        return
+    f.readline()
+    f.readline()
+    result=f.readline().strip()
+    sc=f.readline().strip()
+    f.close()
+
+    rw=tk.Toplevel(win)
+    rw.title(model.project+' warpage')
+    rw.geometry("1000x720+50+50")
+
+    if (result=="")|(sc==""):
+        label_result=tk.Label(rw, text='failed')
+    else:
+        label_result=tk.Label(rw, text=result+' ('+sc+')')
+    
+    global img_result
+
+    img_result=tk.PhotoImage(file="D:/AbaqusSim/%s/Warpage/%s_img.png" % (model.project,model.project))
+    label_img=tk.Label(rw, image=img_result)
+    label_title=tk.Label(rw, text=model.project+' result')
+    label_title.place(x=5, y=5, width=500, height=30)
+    
+    label_img.place(x=5, y=55, width=900, height=600)
+    label_result.place(x=5, y=665, width=500, height=50)
+
     return
 
 
@@ -2195,7 +3230,7 @@ def writescriptCTE(): #unit, 1block, 2block, meshed
     f.write("f.write('\\n')\n")
     f.write("f.write(str(strMinMax1)+'\\n')\n")
     f.write("f.write(str(strMinMax2)+'\\n')\n")
-    f.write("f.close\n")
+    f.write("f.close()\n")
     return True
 
 
@@ -2205,6 +3240,10 @@ def btnCTEClick():
         messagebox.showwarning(title="error",message="Enter project name.")
         return
     model.project=entry_project.get()
+
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
 
     if os.path.exists('D:/AbaqusSim')==False:
         os.mkdir('D:/AbaqusSim')
@@ -2216,6 +3255,8 @@ def btnCTEClick():
         os.mkdir('D:/AbaqusSim/%s/CTE' % model.project)
 
     os.chdir('D:/AbaqusSim/%s/CTE' % model.project)
+
+    SaveInput('D:/AbaqusSim/%s/CTE' % model.project)
 
     if writescriptCTE()==False:
         messagebox.showwarning(title="error",message="failed to write script (CTE)")
@@ -2234,7 +3275,7 @@ def btnCTEClick():
         CTE_X=f.readline().strip()
         CTE_Y=f.readline().strip()
         
-        f.close
+        f.close()
         
         label_result_CTE.config(text='CTE_X='+CTE_X+', CTE_Y='+CTE_Y)
         button_result_CTE.place(x=1130, y=115, width=40, height=25)
@@ -2246,6 +3287,40 @@ def btnCTEClick():
     return
 
 def btnResultCTEClick():
+    try:
+        f=open("D:/AbaqusSim/%s/CTE/%s_CTE_result.txt" % (model.project,model.project),'r')
+    except:
+        messagebox.showwarning(title="error",message="failed to open result file (CTE)")
+        return
+    result1=f.readline()
+    result2=f.readline()
+    f.close()
+
+    rw=tk.Toplevel(win)
+    rw.title(model.project+' CTE')
+    rw.geometry("1230x550+50+60")
+
+    label_title=tk.Label(rw, text=model.project+' CTE result')
+    label_result1=tk.Label(rw, text='CTE_X='+result1)
+    label_result2=tk.Label(rw, text='CTE_Y='+result2)
+    
+    global img_result1, img_result2, img_result1r, img_result2r
+
+    img_result1=Image.open("D:/AbaqusSim/%s/CTE/%s_CTE_X_img.png" % (model.project, model.project))
+    img_result1=img_result1.resize((600,388), PIL.Image.LANCZOS)
+    img_result1r=ImageTk.PhotoImage(img_result1)
+    label_img1=tk.Label(rw, image=img_result1r)
+    img_result2=Image.open("D:/AbaqusSim/%s/CTE/%s_CTE_Y_img.png" % (model.project, model.project))
+    img_result2=img_result2.resize((600,388), PIL.Image.LANCZOS)
+    img_result2r=ImageTk.PhotoImage(img_result2)
+    label_img2=tk.Label(rw, image=img_result2r)
+
+    label_title.place(x=50, y=5, width=500, height=30)
+    label_img1.place(x=10, y=50, width=600, height=388)
+    label_img2.place(x=620, y=50, width=600, height=388)
+    label_result1.place(x=10, y=450, width=600, height=50)
+    label_result2.place(x=620, y=450, width=600, height=50)
+
     return
 
 def writescriptModulus(): #unit
@@ -2390,7 +3465,7 @@ def writescriptModulus(): #unit
     f.write("f.write(str(strMinMax['minValue'])+'\\n')\n") #Z = -0.01
     f.write("f.write(str(strMinMax2['minValue'])+'\\n')\n") #F
     f.write("f.write('%s\\n')\n" % str(ttot)) #t
-    f.write("f.close\n")
+    f.write("f.close()\n")
 
     return True
 
@@ -2403,6 +3478,10 @@ def btnModulusClick():
         return
     model.project=entry_project.get()
 
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
+
     if os.path.exists('D:/AbaqusSim')==False:
         os.mkdir('D:/AbaqusSim')
     
@@ -2413,6 +3492,8 @@ def btnModulusClick():
         os.mkdir('D:/AbaqusSim/%s/Modulus' % model.project)
 
     os.chdir('D:/AbaqusSim/%s/Modulus' % model.project)
+
+    SaveInput('D:/AbaqusSim/%s/Modulus' % model.project)
 
     if writescriptModulus()==False:
         messagebox.showwarning(title="error",message="failed to write script (Modulus)")
@@ -2432,10 +3513,10 @@ def btnModulusClick():
         f.readline()
         F=abs(float(f.readline().strip()))
         t=float(f.readline().strip())
-        f.close
+        f.close()
         E=(((model.x/2)**3) * F)/(model.y*(t**3)*0.01)
         
-        label_result_modulus.config(text='E='+str(round(E,2))+'MPa')
+        label_result_modulus.config(text='E='+str(round(E))+'MPa')
         button_result_modulus.place(x=1130, y=150, width=40, height=25)
         check_modulus.place(x=1180, y=150, width=15, height=25)
     else:
@@ -2445,6 +3526,43 @@ def btnModulusClick():
     return
 
 def btnResultModulusClick():
+    try:
+        f=open("D:/AbaqusSim/%s/Modulus/%s_Modulus_result.txt" % (model.project,model.project),'r')
+    except:
+        messagebox.showwarning(title="error",message="failed to open result file (Modulus)")
+        return
+    f.readline()
+    f.readline()
+    f.readline()
+    F=abs(float(f.readline().strip()))
+    t=float(f.readline().strip())
+    f.close()
+    E=(((model.x/2)**3) * F)/(model.y*(t**3)*0.01)
+
+    rw=tk.Toplevel(win)
+    rw.title(model.project+' Modulus')
+    rw.geometry("1230x550+50+60")
+
+    label_title=tk.Label(rw, text=model.project+' Modulus result')
+    label_result1=tk.Label(rw, text='F='+str(round(F,6))+'N, Δz=0.01mm, t='+str(round(t,4))+'mm')
+    label_result2=tk.Label(rw, text='E='+str(round(E))+'MPa')
+    
+    global img_result1, img_result2, img_result1r, img_result2r
+
+    img_result1=Image.open("D:/AbaqusSim/%s/Modulus/%s_Z_img.png" % (model.project, model.project))
+    img_result1=img_result1.resize((600,388), PIL.Image.LANCZOS)
+    img_result1r=ImageTk.PhotoImage(img_result1)
+    label_img1=tk.Label(rw, image=img_result1r)
+    img_result2=Image.open("D:/AbaqusSim/%s/Modulus/%s_F_img.png" % (model.project, model.project))
+    img_result2=img_result2.resize((600,388), PIL.Image.LANCZOS)
+    img_result2r=ImageTk.PhotoImage(img_result2)
+    label_img2=tk.Label(rw, image=img_result2r)
+
+    label_title.place(x=50, y=5, width=500, height=30)
+    label_img1.place(x=10, y=50, width=600, height=388)
+    label_img2.place(x=620, y=50, width=600, height=388)
+    label_result1.place(x=10, y=450, width=600, height=50)
+    label_result2.place(x=620, y=450, width=600, height=50)
     return
 
 
@@ -2801,6 +3919,11 @@ def btnShellClick():
         messagebox.showwarning(title="error",message="Enter project name.")
         return
     model.project=entry_project.get()
+
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
+
     if os.path.exists('D:/AbaqusSim')==False:
         os.mkdir('D:/AbaqusSim')
     
@@ -2811,6 +3934,8 @@ def btnShellClick():
         os.mkdir('D:/AbaqusSim/%s/Shell' % model.project)
 
     os.chdir('D:/AbaqusSim/%s/Shell' % model.project)
+
+    SaveInput('D:/AbaqusSim/%s/Shell' % model.project)
 
     if writescriptShell()==False:
         messagebox.showwarning(title="error",message="failed to write script (Shell)")
@@ -2973,6 +4098,10 @@ def btnSolidClick():
         return
     model.project=entry_project.get()
 
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
+    
     if os.path.exists('D:/AbaqusSim')==False:
         os.mkdir('D:/AbaqusSim')
     
@@ -2983,6 +4112,8 @@ def btnSolidClick():
         os.mkdir('D:/AbaqusSim/%s/Solid' % model.project)
 
     os.chdir('D:/AbaqusSim/%s/Solid' % model.project)
+
+    SaveInput('D:/AbaqusSim/%s/Solid' % model.project)
 
     if writescriptSolid()==False:
         messagebox.showwarning(title="error",message="failed to write script (Solid)")
@@ -2995,11 +4126,213 @@ def btnSolidClick():
         messagebox.showwarning(title="Solid", message="modeling completed (Solid)")
     return
 
+def SaveInput(dir):
+    now=datetime.now()
+    time=now.strftime("%Y%m%d_%H%M")
+    if CheckG.get()==0: strInputFileName=time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type
+    else:  strInputFileName=time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type+'_Gr'
+    try:
+        f=open(dir+'/'+strInputFileName+'_input.csv','w',newline='')
+    except:
+        messagebox.showwarning(title="error (save input)", message="failed to save the input file")
+        return
+    writer=csv.writer(f)
+    writer.writerow(['ModelType',model.type,'#Layer',model.n])
+    if model.type=='unit':
+        writer.writerow(['x',str(model.x),'y',str(model.y)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)'])
+        for i in range(2*model.n+1):
+            if i==0: #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+    elif (model.type=='1block')|(model.type=='2block'):
+        if model.type=='1block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b)])
+        elif model.type=='2block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b),'c',str(model.c)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)','Modulus(dummy)','CTE(dummy)','Poisson(dummy)','Density(dummy)'])
+        for i in range(2*model.n+1):
+            if i==0: #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Portion_dummy[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','','',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+    elif model.type=='meshed':
+        writer.writerow(['x',str(model.x),'y',str(model.y),'row',str(model.row),'col',str(model.col),'folder',str(model.folder)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill'])
+        for i in range(2*model.n+1):
+            if (i==0)|(i==2*model.n): #SR
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+    else:
+        messagebox.showwarning(title="error (save input)", message="error model type")
+        f.close()
+        return
+    f.close()
+
+def btnSaveInput():
+    try:
+        save_dir = filedialog.askdirectory()
+    except:
+        messagebox.showwarning(title="error (save input)", message="failed to save the input file")
+        return
+    now=datetime.now()
+    time=now.strftime("%Y%m%d_%H%M")
+    if CheckG.get()==0: strInputFileName=time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type
+    else:  strInputFileName=time+'_'+cb_customer.get()+'_'+entry_modelname.get()+'_'+str(model.n)+'L_'+cb_structure.get()+'_'+model.type+'_Gr'
+    try:
+        f=open(save_dir+'/'+strInputFileName+'_input.csv','w',newline='')
+    except:
+        messagebox.showwarning(title="error (save input)", message="failed to save the input file")
+        return
+    writer=csv.writer(f)
+    writer.writerow(['ModelType',model.type,'#Layer',model.n])
+    if model.type=='unit':
+        writer.writerow(['x',str(model.x),'y',str(model.y)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion'])
+        for i in range(2*model.n+1):
+            if i==0: #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+    elif (model.type=='1block')|(model.type=='2block'):
+        if model.type=='1block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b)])
+        elif model.type=='2block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b),'c',str(model.c)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)'])
+        for i in range(2*model.n+1):
+            if i==0: #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get(),list_Portion_dummy[0].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+    elif model.type=='meshed':
+        writer.writerow(['x',str(model.x),'y',str(model.y),'row',str(model.row),'col',str(model.col),'folder',str(model.folder)])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill'])
+        for i in range(2*model.n+1):
+            if (i==0)|(i==2*model.n): #SR
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+            elif i%2==1: #Cu
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get()])
+            else: #PPG
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+    else:
+        messagebox.showwarning(title="error (save input)", message="error model type")
+        f.close()
+        return
+    f.close()
+
+def btnLoadInput():
+    fi=filedialog.askopenfilename(title = 'select input file to load', filetypes=(('*.csv','*csv'),))
+    try:
+        fcheck=open(fi,'r')
+        line1=fcheck.readline().strip().split(sep=',')
+        strType=line1[1]
+        strLayer=line1[3]
+        if strType!=model.type:
+            messagebox.showwarning(title="error", message="model type 불일치")
+            return
+        if int(strLayer)!=model.n:
+            messagebox.showwarning(title="error", message="층 수 불일치")
+            return
+        if model.type=='meshed':
+            strFolder=fcheck.readline().strip().split(sep=',')[9]
+            entry_folder.delete(0,tk.END)
+            entry_folder.insert(0,strFolder)
+        fcheck.close()
+        dfi=pd.read_csv(fi,skiprows=2)
+    except:
+        messagebox.showwarning(title="error", message="failed to load input file")
+        return
+    
+    if model.type=='unit':
+        for i in range(2*model.n+1):
+            list_Thickness[i].delete(0,tk.END)
+            list_Thickness[i].insert(0,dfi.iloc[i].values[2])
+            list_Modulus[i].delete(0,tk.END)
+            list_Modulus[i].insert(0,dfi.iloc[i].values[3])
+            list_CTE[i].delete(0,tk.END)
+            list_CTE[i].insert(0,dfi.iloc[i].values[4])
+            list_Poisson[i].delete(0,tk.END)
+            list_Poisson[i].insert(0,dfi.iloc[i].values[5])
+            list_Density[i].delete(0,tk.END)
+            list_Density[i].insert(0,dfi.iloc[i].values[6])
+        for i in range(model.n):
+            list_Fill[i].set(dfi.iloc[2*i+1].values[7])
+            list_Portion_unit[i+1].delete(0,tk.END)
+            list_Portion_unit[i+1].insert(0,dfi.iloc[2*i+1].values[8])
+        list_Portion_unit[0].delete(0,tk.END)
+        list_Portion_unit[0].insert(0,dfi.iloc[0].values[8])
+        list_Portion_unit[model.n+1].delete(0,tk.END)
+        list_Portion_unit[model.n+1].insert(0,dfi.iloc[2*model.n].values[8])
+    elif (model.type=='1block')|(model.type=='2block'):
+        for i in range(2*model.n+1):
+            list_Thickness[i].delete(0,tk.END)
+            list_Thickness[i].insert(0,dfi.iloc[i].values[2])
+            list_Modulus[i].delete(0,tk.END)
+            list_Modulus[i].insert(0,dfi.iloc[i].values[3])
+            list_CTE[i].delete(0,tk.END)
+            list_CTE[i].insert(0,dfi.iloc[i].values[4])
+            list_Poisson[i].delete(0,tk.END)
+            list_Poisson[i].insert(0,dfi.iloc[i].values[5])
+            list_Density[i].delete(0,tk.END)
+            list_Density[i].insert(0,dfi.iloc[i].values[6])
+        for i in range(model.n):
+            list_Fill[i].set(dfi.iloc[2*i+1].values[7])
+            list_Portion_unit[i+1].delete(0,tk.END)
+            list_Portion_unit[i+1].insert(0,dfi.iloc[2*i+1].values[8])
+            list_Portion_dummy[i+1].delete(0,tk.END)
+            list_Portion_dummy[i+1].insert(0,dfi.iloc[2*i+1].values[9])
+        list_Portion_unit[0].delete(0,tk.END)
+        list_Portion_unit[0].insert(0,dfi.iloc[0].values[8])
+        list_Portion_unit[model.n+1].delete(0,tk.END)
+        list_Portion_unit[model.n+1].insert(0,dfi.iloc[2*model.n].values[8])
+        list_Portion_dummy[0].delete(0,tk.END)
+        list_Portion_dummy[0].insert(0,dfi.iloc[0].values[9])
+        list_Portion_dummy[model.n+1].delete(0,tk.END)
+        list_Portion_dummy[model.n+1].insert(0,dfi.iloc[2*model.n].values[9])
+    elif model.type=='meshed':
+        for i in range(2*model.n+1):
+            list_Thickness[i].delete(0,tk.END)
+            list_Thickness[i].insert(0,dfi.iloc[i].values[2])
+            list_Modulus[i].delete(0,tk.END)
+            list_Modulus[i].insert(0,dfi.iloc[i].values[3])
+            list_CTE[i].delete(0,tk.END)
+            list_CTE[i].insert(0,dfi.iloc[i].values[4])
+            list_Poisson[i].delete(0,tk.END)
+            list_Poisson[i].insert(0,dfi.iloc[i].values[5])
+            list_Density[i].delete(0,tk.END)
+            list_Density[i].insert(0,dfi.iloc[i].values[6])
+        for i in range(model.n):
+            list_Fill[i].set(dfi.iloc[2*i+1].values[7])
+    return
+
+def btnInitClick():
+    if messagebox.askyesno(title='초기화', message='초기화를 진행하시겠습니까?')==False:
+        return
+    Init()
+    cb_model.set('')
 
 cwd=os.getcwd()
 
 model=Model()
 L=[]
+Ls=[]
 
 #input
 list_No=[]              #col 0, lb
@@ -3023,14 +4356,13 @@ list_CTE_dummy=[]       #col 15
 list_Poisson_dummy=[]   #col 16
 list_Density_dummy=[]   #col 17
 
-df=pd.read_csv('data.csv')
 
 win=tk.Tk()
 win.geometry('1300x700+50+50')
-win.title("Warpage & Material Properties Simulation")
+win.title("Warpage & Material Properties Simulation (test ver.)")
 
 try:
-    f=pd.read_csv('data.csv')
+    df=pd.read_csv('data.csv')
 except:
     messagebox.showwarning(title="error",message="failed to load input data (Material DB)")
 
@@ -3154,5 +4486,31 @@ check_gui=tk.Checkbutton(win, text="GUI", variable=CheckGUI)
 
 CheckJob=tk.IntVar()
 check_job=tk.Checkbutton(win, text="job", variable=CheckJob)
+
+try:
+    fc=open("customer.txt",'r')
+except:
+    messagebox.showwarning(title="error",message="failed to open customer list ('customer.txt')")
+values_customer=fc.readlines()
+fc.close()
+
+for i in range(len(values_customer)):
+    values_customer[i]=values_customer[i].strip()
+
+label_customer = tk.Label(win, text="고객사 : ")
+cb_customer=tkinter.ttk.Combobox(master=win, height=15, values=values_customer, state="readonly")
+
+label_modelname=tk.Label(win, text='모델명 : ')
+entry_modelname=tk.Entry(win)
+
+label_structure=tk.Label(win, text='구조 : ')
+values_structure=['Cored','Coreless_rev','Coreless_non','ETS']
+cb_structure=tkinter.ttk.Combobox(master=win, height=15, values=values_structure, state="readonly")
+
+button_save_input=tk.Button(win, text='save input', command=btnSaveInput)
+button_load_input=tk.Button(win, text='load input', command=btnLoadInput)
+
+button_init=tk.Button(win, text='초기화', command=btnInitClick)
+button_init.place(x=35, y=600, width=70, height=30)
 
 win.mainloop()
