@@ -4063,14 +4063,14 @@ def writescriptSolid(): #unit, meshed
                 f.write("myModel.materials['SR_top_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[0].section[i][j].modulus, L[0].section[i][j].poisson))
                 f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
                 f.write("myModel.HomogeneousSolidSection(name='Section_SR_top_%d_%d',material='SR_top_%d_%d', thickness=None)\n" % (i,j,i,j))
-                f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=%f,zMax=%f)), sectionName='Section_SR_top_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((j*(model.x/model.col)),((j+1)*(model.x/model.col)),(model.y-i*(model.y/model.row)),(model.y-(i+1)*(model.y/model.row)),(ttot-L[0].thickness),ttot,i,j))
+                f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=%f,zMax=%f)), sectionName='Section_SR_top_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((j*(model.x/model.col)),((j+1)*(model.x/model.col)),(model.y-(i+1)*(model.y/model.row)),(model.y-i*(model.y/model.row)),(ttot-L[0].thickness),ttot,i,j))
 
                 f.write("myModel.Material(name='SR_btm_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_btm_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[2*model.n].section[i][j].density))
                 f.write("myModel.materials['SR_btm_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[2*model.n].section[i][j].modulus, L[2*model.n].section[i][j].poisson))
                 f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
                 f.write("myModel.HomogeneousSolidSection(name='Section_SR_btm_%d_%d',material='SR_btm_%d_%d', thickness=None)\n" % (i,j,i,j))
-                f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=0,zMax=%f)), sectionName='Section_SR_btm_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((j*(model.x/model.col)),((j+1)*(model.x/model.col)),(model.y-i*(model.y/model.row)),(model.y-(i+1)*(model.y/model.row)),L[2*model.n].thickness,i,j))
+                f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=0,zMax=%f)), sectionName='Section_SR_btm_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((j*(model.x/model.col)),((j+1)*(model.x/model.col)),(model.y-(i+1)*(model.y/model.row)),(model.y-i*(model.y/model.row)),L[2*model.n].thickness,i,j))
         
         temp = L[0].thickness
         for i in range(model.n):
@@ -4082,7 +4082,7 @@ def writescriptSolid(): #unit, meshed
                     f.write("myModel.materials['L%d_%d_%d'].Elastic(table=((%f,%f),))\n" % ((i+1),row,col, L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson))
                     f.write("myModel.materials['L%d_%d_%d'].Expansion(table=((%fe-06,),))\n" % ((i+1),row,col, L[2*i+1].section[row][col].cte))
                     f.write("myModel.HomogeneousSolidSection(name='Section_L%d_%d_%d',material='L%d_%d_%d', thickness=None)\n" % ((i+1),row,col,(i+1),row,col))
-                    f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=%f,zMax=%f)), sectionName='Section_L%d_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((col*(model.x/model.col)),((col+1)*(model.x/model.col)),(model.y-row*(model.y/model.row)),(model.y-(row+1)*(model.y/model.row)),(ttot-temp+L[2*i+2].thickness),(ttot-temp+L[2*i+2].thickness+L[2*i+1].thickness),(i+1),row,col))
+                    f.write("myPart.SectionAssignment(region=regionToolset.Region(cells=myPart.cells.getByBoundingBox(xMin=%f,xMax=%f,yMin=%f,yMax=%f,zMin=%f,zMax=%f)), sectionName='Section_L%d_%d_%d', offset=0.0, offsetType=MIDDLE_SURFACE, offsetField='',thicknessAssignment=FROM_SECTION)\n" % ((col*(model.x/model.col)),((col+1)*(model.x/model.col)),(model.y-(row+1)*(model.y/model.row)),(model.y-row*(model.y/model.row)),(ttot-temp+L[2*i+2].thickness),(ttot-temp+L[2*i+2].thickness+L[2*i+1].thickness),(i+1),row,col))
 
     f.write("myModel.rootAssembly.DatumCsysByDefault(CARTESIAN)\n")
     f.write("myModel.rootAssembly.Instance(dependent=ON, name='Part-1-1', part=myPart)\n")
