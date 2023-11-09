@@ -8,6 +8,7 @@ import PIL
 from PIL import Image, ImageGrab, ImageTk
 from tkinter import filedialog
 import csv
+import math
 
 class ScrollableFrame(tk.Frame):
     def __init__(self, container, *args, **kwargs):
@@ -47,6 +48,7 @@ class Model:
         self.col=0
         self.folder=''
         self.project=''
+        self.step=[]
     def Init(self):
         self.type='' #unit | 1block | 2block | meshed
         self.n=0
@@ -60,9 +62,10 @@ class Model:
         self.col=0
         self.folder=''
         self.project=''
+        del self.step[0:]
 
 class Layer:
-    def __init__(self, material='', thickness=0.0, modulus=0.0, cte=0.0, poisson=0.0, density=0.0, fill='', row=0, col=0):
+    def __init__(self, material='', thickness=0.0, modulus=0.0, cte=0.0, poisson=0.0, density=0.0, fill='', row=0, col=0, modulus2=0.0,cte2=0.0,Tg=0):
         self.material=material # SR | Cu | PPG
         self.thickness=thickness
         self.modulus=modulus
@@ -70,6 +73,9 @@ class Layer:
         self.poisson=poisson
         self.density=density
         self.fill=fill #Cu
+        self.modulus2=modulus2
+        self.cte2=cte2
+        self.Tg=Tg
         if (row>0)&(col>0):
             self.section= [[Part() for _ in range(col)] for _ in range(row)] #meshed
         else:
@@ -83,6 +89,10 @@ class Part:
         self.cte=0.0
         self.poisson=0.0
         self.density=0.0
+        self.modulus2=0.0
+        self.cte2=0.0
+        self.Elastic=[] # [Modulus, Poisson, Temp.]
+        self.Expansion=[] # [CTE, Temp.]
 
 class LayerSQBC:
     def __init__(self, thickness=0.0, portion=0.0, modulus=0.0, cte=0.0, distance=0.0, color='', fill=''):
@@ -480,6 +490,7 @@ def btnMClick(x,y): # x : Layer No.,  y : Material type
         list_Poisson[x].delete(0,tk.END)
         list_Density[x].delete(0,tk.END)
 
+        list_No[x].config(text=str(index))
         list_Modulus[x].insert(0,round(df.iloc[index].values[7]*1000))
         list_CTE[x].insert(0,df.iloc[index].values[5])
         list_Poisson[x].insert(0,df.iloc[index].values[11])
@@ -822,7 +833,7 @@ def btnEnterClick():
             list_No[i].grid_forget()
     del list_No[0:]
     for i in range(2*model.n+1):
-        list_No.append(tk.Label(frame.scrollable_frame, text=str(i), width=3))
+        list_No.append(tk.Label(frame.scrollable_frame, text='', width=3)) #button으로 수정
         list_No[i].grid(row=i, column=0)
     
     if len(list_Layer)>0:
@@ -1056,7 +1067,6 @@ def btnEnterClick():
     return
 
 def btnCalcClick():
-    
     #input data(entry) validation
     for i in range(2*model.n+1):
         try:
@@ -1105,27 +1115,105 @@ def btnCalcClick():
         del L[0:]
         L.append(Layer('SR', 0.001*float(list_Thickness[0].get()), float(list_Modulus[0].get()), float(list_CTE[0].get()), float(list_Poisson[0].get()), float(list_Density[0].get())))
         
+        L[0].modulus2=float(df.iloc[int(list_No[0]['text'])].values[8]) * 1000
+        L[0].cte2=float(df.iloc[int(list_No[0]['text'])].values[6])
+        L[0].Tg=float(df.iloc[int(list_No[0]['text'])].values[9])
+
         L[0].unit.portion=float(list_Portion_unit[0].get())*0.01            
         L[0].unit.modulus=L[0].modulus * L[0].unit.portion
         L[0].unit.cte=L[0].cte
         L[0].unit.poisson=L[0].poisson * L[0].unit.portion
         L[0].unit.density=L[0].density * L[0].unit.portion
+
+        L[0].unit.cte2=L[0].cte2
+        L[0].unit.modulus2=L[0].modulus2 * L[0].unit.portion
+
+        if L[0].Tg>=255:
+            L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
+            L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, 250])
+            L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
+
+            L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+        else:
+            L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
+            L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, L[0].Tg-5])
+            L[0].unit.Elastic.append([L[0].unit.modulus2+10**(int(math.log10(L[0].unit.modulus2))-1), L[0].unit.poisson, L[0].Tg+5])
+            L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
+
+            if L[0].Tg<200:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            else:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
         
         for i in range(model.n-1):
             L.append(Layer('Cu', 0.001*float(list_Thickness[2*i+1].get()), float(list_Modulus[2*i+1].get()), float(list_CTE[2*i+1].get()), float(list_Poisson[2*i+1].get()), float(list_Density[2*i+1].get()), list_Fill[i].get()))
             L[2*i+1].unit.portion=float(list_Portion_unit[i+1].get())*0.01
 
             L.append(Layer('PPG', 0.001*float(list_Thickness[2*i+2].get()), float(list_Modulus[2*i+2].get()), float(list_CTE[2*i+2].get()), float(list_Poisson[2*i+2].get()), float(list_Density[2*i+2].get())))
+            L[2*i+2].modulus2=float(df.iloc[int(list_No[2*i+2]['text'])].values[8]) * 1000
+            L[2*i+2].cte2=float(df.iloc[int(list_No[2*i+2]['text'])].values[6])
+            L[2*i+2].Tg=float(df.iloc[int(list_No[2*i+2]['text'])].values[9])
+
+            if L[2*i+2].Tg>=255:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+            else:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                if L[2*i+2].Tg<200:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
+                else:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get()))
         L[2*model.n-1].unit.portion=float(list_Portion_unit[model.n].get())*0.01
 
         L.append(Layer('SR', 0.001*float(list_Thickness[2*model.n].get()), float(list_Modulus[2*model.n].get()), float(list_CTE[2*model.n].get()), float(list_Poisson[2*model.n].get()), float(list_Density[2*model.n].get())))
+        
+        L[2*model.n].modulus2=float(df.iloc[int(list_No[2*model.n]['text'])].values[8]) * 1000
+        L[2*model.n].cte2=float(df.iloc[int(list_No[2*model.n]['text'])].values[6])
+        L[2*model.n].Tg=float(df.iloc[int(list_No[2*model.n]['text'])].values[9])
+        
         L[2*model.n].unit.portion=float(list_Portion_unit[model.n+1].get())*0.01
         L[2*model.n].unit.modulus=L[2*model.n].modulus * L[2*model.n].unit.portion
         L[2*model.n].unit.cte=L[2*model.n].cte
         L[2*model.n].unit.poisson=L[2*model.n].poisson * L[2*model.n].unit.portion
         L[2*model.n].unit.density=L[2*model.n].density * L[2*model.n].unit.portion
+
+        L[2*model.n].unit.cte2=L[2*model.n].cte2
+        L[2*model.n].unit.modulus2=L[2*model.n].modulus2 * L[2*model.n].unit.portion
+
+        if L[2*model.n].Tg>=255:
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, 250])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
+
+            L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+        else:
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg-5])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2+10**(int(math.log10(L[2*model.n].unit.modulus2))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg+5])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
+
+            if L[2*model.n].Tg<200:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            else:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
 
         for i in range(model.n):
             if L[2*i+1].fill=='up':
@@ -1133,11 +1221,59 @@ def btnCalcClick():
                 L[2*i+1].unit.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].cte * L[2*i].modulus * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus
                 L[2*i+1].unit.poisson = L[2*i+1].poisson * L[2*i+1].unit.portion + L[2*i].poisson * (1-L[2*i+1].unit.portion)
                 L[2*i+1].unit.density = L[2*i+1].density * L[2*i+1].unit.portion + L[2*i].density * (1-L[2*i+1].unit.portion)
+
+                L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].modulus2 * (1-L[2*i+1].unit.portion)
+                L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].cte2 * L[2*i].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
+
+                if L[2*i].Tg>=255:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                else:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i].Tg-5])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i].Tg+5])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    if L[2*i].Tg<200:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                    else:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+
             elif L[2*i+1].fill=='down':
                 L[2*i+1].unit.modulus = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus * (1-L[2*i+1].unit.portion)
                 L[2*i+1].unit.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus
                 L[2*i+1].unit.poisson = L[2*i+1].poisson * L[2*i+1].unit.portion + L[2*i+2].poisson * (1-L[2*i+1].unit.portion)
                 L[2*i+1].unit.density = L[2*i+1].density * L[2*i+1].unit.portion + L[2*i+2].density * (1-L[2*i+1].unit.portion)
+
+                L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)
+                L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte2 * L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
+
+                if L[2*i+2].Tg>=255:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                else:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg-5])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg+5])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    if L[2*i+2].Tg<200:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                    else:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
             
         label_Modulus_unit.place(x=584,y=200,width=47,height=35)    #col10->9 584
         label_CTE_unit.place(x=631,y=200,width=47,height=35)        #col11->10 631
@@ -1196,11 +1332,18 @@ def btnCalcClick():
         del L[0:]
         L.append(Layer('SR', 0.001*float(list_Thickness[0].get()), float(list_Modulus[0].get()), float(list_CTE[0].get()), float(list_Poisson[0].get()), float(list_Density[0].get())))
         
-        L[0].unit.portion=float(list_Portion_unit[0].get())*0.01            
+        L[0].modulus2=float(df.iloc[int(list_No[0]['text'])].values[8]) * 1000
+        L[0].cte2=float(df.iloc[int(list_No[0]['text'])].values[6])
+        L[0].Tg=float(df.iloc[int(list_No[0]['text'])].values[9])
+
+        L[0].unit.portion=float(list_Portion_unit[0].get())*0.01
         L[0].unit.modulus=L[0].modulus * L[0].unit.portion
         L[0].unit.cte=L[0].cte
         L[0].unit.poisson=L[0].poisson * L[0].unit.portion
         L[0].unit.density=L[0].density * L[0].unit.portion
+
+        L[0].unit.cte2=L[0].cte2
+        L[0].unit.modulus2=L[0].modulus2 * L[0].unit.portion
 
         L[0].dummy.portion=float(list_Portion_dummy[0].get())*0.01            
         L[0].dummy.modulus=L[0].modulus * L[0].dummy.portion
@@ -1208,12 +1351,77 @@ def btnCalcClick():
         L[0].dummy.poisson=L[0].poisson * L[0].dummy.portion
         L[0].dummy.density=L[0].density * L[0].dummy.portion
 
+        L[0].dummy.cte2=L[0].cte2
+        L[0].dummy.modulus2=L[0].modulus2 * L[0].dummy.portion
+
+        if L[0].Tg>=255:
+            L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
+            L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, 250])
+            L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
+
+            L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+
+            L[0].dummy.Elastic.append([L[0].dummy.modulus, L[0].dummy.poisson, 25])
+            L[0].dummy.Elastic.append([L[0].dummy.modulus-10**(int(math.log10(L[0].dummy.modulus))-1), L[0].dummy.poisson, 250])
+            L[0].dummy.Elastic.append([L[0].dummy.modulus2, L[0].dummy.poisson, 260])
+
+            L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+        else:
+            L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
+            L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, L[0].Tg-5])
+            L[0].unit.Elastic.append([L[0].unit.modulus2+10**(int(math.log10(L[0].unit.modulus2))-1), L[0].unit.poisson, L[0].Tg+5])
+            L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
+
+            L[0].dummy.Elastic.append([L[0].dummy.modulus, L[0].dummy.poisson, 25])
+            L[0].dummy.Elastic.append([L[0].dummy.modulus-10**(int(math.log10(L[0].dummy.modulus))-1), L[0].dummy.poisson, L[0].Tg-5])
+            L[0].dummy.Elastic.append([L[0].dummy.modulus2+10**(int(math.log10(L[0].dummy.modulus2))-1), L[0].dummy.poisson, L[0].Tg+5])
+            L[0].dummy.Elastic.append([L[0].dummy.modulus2, L[0].dummy.poisson, 260])
+
+            if L[0].Tg<200:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(200-L[0].Tg))/200, 200])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+            else:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+                
+
         for i in range(model.n-1):
             L.append(Layer('Cu', 0.001*float(list_Thickness[2*i+1].get()), float(list_Modulus[2*i+1].get()), float(list_CTE[2*i+1].get()), float(list_Poisson[2*i+1].get()), float(list_Density[2*i+1].get()), list_Fill[i].get()))
             L[2*i+1].unit.portion=float(list_Portion_unit[i+1].get())*0.01
             L[2*i+1].dummy.portion=float(list_Portion_dummy[i+1].get())*0.01
 
             L.append(Layer('PPG', 0.001*float(list_Thickness[2*i+2].get()), float(list_Modulus[2*i+2].get()), float(list_CTE[2*i+2].get()), float(list_Poisson[2*i+2].get()), float(list_Density[2*i+2].get())))
+            L[2*i+2].modulus2=float(df.iloc[int(list_No[2*i+2]['text'])].values[8]) * 1000
+            L[2*i+2].cte2=float(df.iloc[int(list_No[2*i+2]['text'])].values[6])
+            L[2*i+2].Tg=float(df.iloc[int(list_No[2*i+2]['text'])].values[9])
+
+            if L[2*i+2].Tg>=255:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+            else:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                if L[2*i+2].Tg<200:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
+                else:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get()))
         L[2*model.n-1].unit.portion=float(list_Portion_unit[model.n].get())*0.01
@@ -1233,6 +1441,54 @@ def btnCalcClick():
         L[2*model.n].dummy.poisson=L[2*model.n].poisson * L[2*model.n].dummy.portion
         L[2*model.n].dummy.density=L[2*model.n].density * L[2*model.n].dummy.portion
 
+        L[2*model.n].modulus2=float(df.iloc[int(list_No[2*model.n]['text'])].values[8]) * 1000
+        L[2*model.n].cte2=float(df.iloc[int(list_No[2*model.n]['text'])].values[6])
+        L[2*model.n].Tg=float(df.iloc[int(list_No[2*model.n]['text'])].values[9])
+
+        L[2*model.n].unit.cte2=L[2*model.n].cte2
+        L[2*model.n].unit.modulus2=L[2*model.n].modulus2 * L[2*model.n].unit.portion
+
+        L[2*model.n].dummy.cte2=L[2*model.n].cte2
+        L[2*model.n].dummy.modulus2=L[2*model.n].modulus2 * L[2*model.n].dummy.portion
+
+        if L[2*model.n].Tg>=255:
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, 250])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
+
+            L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson, 25])
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus-10**(int(math.log10(L[2*model.n].dummy.modulus))-1), L[2*model.n].dummy.poisson, 250])
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2, L[2*model.n].dummy.poisson, 260])
+
+            L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+        else:
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg-5])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2+10**(int(math.log10(L[2*model.n].unit.modulus2))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg+5])
+            L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
+
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson, 25])
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus-10**(int(math.log10(L[2*model.n].dummy.modulus))-1), L[2*model.n].dummy.poisson, L[2*model.n].Tg-5])
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2+10**(int(math.log10(L[2*model.n].dummy.modulus2))-1), L[2*model.n].dummy.poisson, L[2*model.n].Tg+5])
+            L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2, L[2*model.n].dummy.poisson, 260])
+
+            if L[2*model.n].Tg<200:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+            else:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+
         for i in range(model.n):
             if L[2*i+1].fill=='up':
                 L[2*i+1].unit.modulus = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].modulus * (1-L[2*i+1].unit.portion)
@@ -1244,6 +1500,51 @@ def btnCalcClick():
                 L[2*i+1].dummy.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i].cte * L[2*i].modulus * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus
                 L[2*i+1].dummy.poisson = L[2*i+1].poisson * L[2*i+1].dummy.portion + L[2*i].poisson * (1-L[2*i+1].dummy.portion)
                 L[2*i+1].dummy.density = L[2*i+1].density * L[2*i+1].dummy.portion + L[2*i].density * (1-L[2*i+1].dummy.portion)
+
+                L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].modulus2 * (1-L[2*i+1].unit.portion)
+                L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].cte2 * L[2*i].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
+
+                L[2*i+1].dummy.modulus2 = L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i].modulus2 * (1-L[2*i+1].dummy.portion)
+                L[2*i+1].dummy.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i].cte2 * L[2*i].modulus2 * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus2
+
+                if L[2*i].Tg>=255:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, 250])
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+
+                    L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                else:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i].Tg-5])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i].Tg+5])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, L[2*i].Tg-5])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2+10**(int(math.log10(L[2*i+1].dummy.modulus2))-1), L[2*i+1].dummy.poisson, L[2*i].Tg+5])
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+
+                    if L[2*i].Tg<200:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+                    else:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+
             elif L[2*i+1].fill=='down':
                 L[2*i+1].unit.modulus = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus * (1-L[2*i+1].unit.portion)
                 L[2*i+1].unit.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus
@@ -1254,6 +1555,50 @@ def btnCalcClick():
                 L[2*i+1].dummy.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus
                 L[2*i+1].dummy.poisson = L[2*i+1].poisson * L[2*i+1].dummy.portion + L[2*i+2].poisson * (1-L[2*i+1].dummy.portion)
                 L[2*i+1].dummy.density = L[2*i+1].density * L[2*i+1].dummy.portion + L[2*i+2].density * (1-L[2*i+1].dummy.portion)
+
+                L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)
+                L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte2 * L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
+
+                L[2*i+1].dummy.modulus2 = L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i+2].modulus2 * (1-L[2*i+1].dummy.portion)
+                L[2*i+1].dummy.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i+2].cte2 * L[2*i+2].modulus2 * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus2
+
+                if L[2*i+2].Tg>=255:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, 250])
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+
+                    L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                else:
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg-5])
+                    #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg+5])
+                    L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
+
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, L[2*i+2].Tg-5])
+                    #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2+10**(int(math.log10(L[2*i+1].dummy.modulus2))-1), L[2*i+1].dummy.poisson, L[2*i+2].Tg+5])
+                    L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+
+                    if L[2*i+2].Tg<200:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+                    else:
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
 
         label_Modulus_unit.place(x=631,y=200,width=47,height=35)    #col10
         label_CTE_unit.place(x=678,y=200,width=47,height=35)        #col11
@@ -1364,6 +1709,11 @@ def btnCalcClick():
     elif model.type=='meshed':
         del L[0:]
         L.append(Layer('SR', 0.001*float(list_Thickness[0].get()), float(list_Modulus[0].get()), float(list_CTE[0].get()), float(list_Poisson[0].get()), float(list_Density[0].get()), row=model.row, col=model.col))
+        
+        L[0].modulus2=float(df.iloc[int(list_No[0]['text'])].values[8]) * 1000
+        L[0].cte2=float(df.iloc[int(list_No[0]['text'])].values[6])
+        L[0].Tg=float(df.iloc[int(list_No[0]['text'])].values[9])
+
         with open(model.folder+'/SR_top.txt') as f:
             for row in range(model.row):
                 text=''
@@ -1383,11 +1733,40 @@ def btnCalcClick():
                         L[0].section[row][col].cte=0.001
                         L[0].section[row][col].poisson=0.001
                         L[0].section[row][col].density=0.00118
+
+                        L[0].section[row][col].modulus2=0.0001
+                        L[0].section[row][col].cte2=0.001
+
+                        L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus, L[0].section[row][col].poisson, 300])
+                        L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, 300])
                     else:
                         L[0].section[row][col].modulus=L[0].modulus * L[0].section[row][col].portion
                         L[0].section[row][col].cte=L[0].cte
                         L[0].section[row][col].poisson=L[0].poisson * L[0].section[row][col].portion
                         L[0].section[row][col].density=L[0].density * L[0].section[row][col].portion
+
+                        L[0].section[row][col].modulus2=L[0].modulus2 * L[0].section[row][col].portion
+                        L[0].section[row][col].cte2=L[0].cte2
+
+                        if L[0].Tg>=255:
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus, L[0].section[row][col].poisson, 25])
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus-10**(int(math.log10(L[0].section[row][col].modulus))-1), L[0].section[row][col].poisson, 250])
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2, L[0].section[row][col].poisson, 260])
+
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                        else:
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus, L[0].section[row][col].poisson, 25])
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus-10**(int(math.log10(L[0].section[row][col].modulus))-1), L[0].section[row][col].poisson, L[0].Tg-5])
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2+10**(int(math.log10(L[0].section[row][col].modulus2))-1), L[0].section[row][col].poisson, L[0].Tg+5])
+                            L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2, L[0].section[row][col].poisson, 260])
+
+                            if L[0].Tg<200:
+                                L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(200-L[0].Tg))/200, 200])
+                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                            else:
+                                L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
 
 
         for i in range(model.n-1):
@@ -1406,6 +1785,29 @@ def btnCalcClick():
                             return
                         L[2*i+1].section[row][col].portion=float(text[col])*0.01
             L.append(Layer('PPG', 0.001*float(list_Thickness[2*i+2].get()), float(list_Modulus[2*i+2].get()), float(list_CTE[2*i+2].get()), float(list_Poisson[2*i+2].get()), float(list_Density[2*i+2].get())))
+            L[2*i+2].modulus2=float(df.iloc[int(list_No[2*i+2]['text'])].values[8]) * 1000
+            L[2*i+2].cte2=float(df.iloc[int(list_No[2*i+2]['text'])].values[6])
+            L[2*i+2].Tg=float(df.iloc[int(list_No[2*i+2]['text'])].values[9])
+
+            if L[2*i+2].Tg>=255:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+            else:
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
+                L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+
+                if L[2*i+2].Tg<200:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
+                else:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get(), model.row, model.col))
         with open(model.folder+'/L'+str(model.n)+'.txt') as f:
@@ -1423,6 +1825,11 @@ def btnCalcClick():
                     L[2*model.n-1].section[row][col].portion=float(text[col])*0.01
 
         L.append(Layer('SR', 0.001*float(list_Thickness[2*model.n].get()), float(list_Modulus[2*model.n].get()), float(list_CTE[2*model.n].get()), float(list_Poisson[2*model.n].get()), float(list_Density[2*model.n].get()), row=model.row, col=model.col))
+        
+        L[2*model.n].modulus2=float(df.iloc[int(list_No[2*model.n]['text'])].values[8]) * 1000
+        L[2*model.n].cte2=float(df.iloc[int(list_No[2*model.n]['text'])].values[6])
+        L[2*model.n].Tg=float(df.iloc[int(list_No[2*model.n]['text'])].values[9])
+        
         with open(model.folder+'/SR_btm.txt') as f:
             for row in range(model.row):
                 text=''
@@ -1441,11 +1848,40 @@ def btnCalcClick():
                         L[2*model.n].section[row][col].cte=0.001
                         L[2*model.n].section[row][col].poisson=0.001
                         L[2*model.n].section[row][col].density=0.00118
+
+                        L[2*model.n].section[row][col].modulus2=0.0001
+                        L[2*model.n].section[row][col].cte2=0.001
+
+                        L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus, L[2*model.n].section[row][col].poisson, 300])
+                        L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, 300])
                     else:
                         L[2*model.n].section[row][col].modulus=L[2*model.n].modulus * L[2*model.n].section[row][col].portion
                         L[2*model.n].section[row][col].cte=L[2*model.n].cte
                         L[2*model.n].section[row][col].poisson=L[2*model.n].poisson * L[2*model.n].section[row][col].portion
                         L[2*model.n].section[row][col].density=L[2*model.n].density * L[2*model.n].section[row][col].portion
+
+                        L[2*model.n].section[row][col].modulus2=L[2*model.n].modulus2 * L[2*model.n].section[row][col].portion
+                        L[2*model.n].section[row][col].cte2=L[2*model.n].cte2
+
+                        if L[2*model.n].Tg>=255:
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus, L[2*model.n].section[row][col].poisson, 25])
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus-10**(int(math.log10(L[2*model.n].section[row][col].modulus))-1), L[2*model.n].section[row][col].poisson, 250])
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2, L[2*model.n].section[row][col].poisson, 260])
+
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                        else:
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus, L[2*model.n].section[row][col].poisson, 25])
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus-10**(int(math.log10(L[2*model.n].section[row][col].modulus))-1), L[2*model.n].section[row][col].poisson, L[2*model.n].Tg-5])
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2+10**(int(math.log10(L[2*model.n].section[row][col].modulus2))-1), L[2*model.n].section[row][col].poisson, L[2*model.n].Tg+5])
+                            L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2, L[2*model.n].section[row][col].poisson, 260])
+
+                            if L[2*model.n].Tg<200:
+                                L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(200-L[2*model.n].Tg))/200, 200])
+                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                            else:
+                                L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
         
         for i in range(model.n):
             for row in range(model.row):
@@ -1455,11 +1891,58 @@ def btnCalcClick():
                         L[2*i+1].section[row][col].cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i].cte * L[2*i].modulus * (1-L[2*i+1].section[row][col].portion)) / L[2*i+1].section[row][col].modulus
                         L[2*i+1].section[row][col].poisson = L[2*i+1].poisson * L[2*i+1].section[row][col].portion + L[2*i].poisson * (1-L[2*i+1].section[row][col].portion)
                         L[2*i+1].section[row][col].density = L[2*i+1].density * L[2*i+1].section[row][col].portion + L[2*i].density * (1-L[2*i+1].section[row][col].portion)
+
+                        L[2*i+1].section[row][col].modulus2 = L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i].modulus2 * (1-L[2*i+1].section[row][col].portion)
+                        L[2*i+1].section[row][col].cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i].cte2 * L[2*i].modulus2 * (1-L[2*i+1].section[row][col].portion)) / L[2*i+1].section[row][col].modulus2
+
+                        if L[2*i].Tg>=255:
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, 250])
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
+
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                        else:
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, L[2*i].Tg-5])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2+10**(int(math.log10(L[2*i+1].section[row][col].modulus2))-1), L[2*i+1].section[row][col].poisson, L[2*i].Tg+5])
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
+
+                            if L[2*i].Tg<200:
+                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i].Tg))/200, 200])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+                            else:
+                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+
                     elif L[2*i+1].fill=='down':
                         L[2*i+1].section[row][col].modulus = L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].modulus * (1-L[2*i+1].section[row][col].portion)
                         L[2*i+1].section[row][col].cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].section[row][col].portion)) / L[2*i+1].section[row][col].modulus
                         L[2*i+1].section[row][col].poisson = L[2*i+1].poisson * L[2*i+1].section[row][col].portion + L[2*i+2].poisson * (1-L[2*i+1].section[row][col].portion)
                         L[2*i+1].section[row][col].density = L[2*i+1].density * L[2*i+1].section[row][col].portion + L[2*i+2].density * (1-L[2*i+1].section[row][col].portion)
+
+                        L[2*i+1].section[row][col].modulus2 = L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].modulus2 * (1-L[2*i+1].section[row][col].portion)
+                        L[2*i+1].section[row][col].cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].cte2 * L[2*i+2].modulus2 * (1-L[2*i+1].section[row][col].portion)) / L[2*i+1].section[row][col].modulus2
+
+                        if L[2*i+2].Tg>=255:
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, 250])
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
+
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                        else:
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, L[2*i+2].Tg-5])
+                            #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2+10**(int(math.log10(L[2*i+1].section[row][col].modulus2))-1), L[2*i+1].section[row][col].poisson, L[2*i+2].Tg+5])
+                            L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
+
+                            if L[2*i+2].Tg<200:
+                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i+2].Tg))/200, 200])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                            else:
+                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
 
         if len(list_Modulus_unit)>0:
             for i in range(len(list_Modulus_unit)):
@@ -1549,6 +2032,8 @@ def btnCalcClick():
     check_cpu.place(x=1200, y=120, width=70, height=25)
     check_gui.place(x=1200, y=155, width=70, height=25)
     check_job.place(x=1200, y=190, width=70, height=25)
+
+    button_highT.place(x=1200, y=230, width=70, height=25)
 
     return
 
@@ -4126,6 +4611,988 @@ def btnSolidClick():
         messagebox.showwarning(title="Solid", message="modeling completed (Solid)")
     return
 
+def writescriptHighT(): #수정필요
+    try:
+        f=open(model.project+'_HighT.py','w')
+    except:
+        return False
+    f.write("from abaqus import *\n")
+    f.write("from abaqusConstants import *\n")
+    f.write("import visualization\n")
+    f.write("import interaction\n")
+    f.write("backwardCompatibility.setValues(includeDeprecated=True, reportDeprecated=False)\n")
+    f.write("import regionToolset\n")
+    f.write("import sketch\n")
+    f.write("import part\n")
+
+    f.write("myModel = mdb.Model(name='Model-1')\n")
+
+    if model.type=='unit':
+        f.write("x=%f\n" % (model.x/2))
+        f.write("y=%f\n" % (model.y/2))
+
+        f.write("mySketch = myModel.ConstrainedSketch(name='Sketch A',sheetSize=500.0)\n")
+        f.write("xyCoords = ((-x,y),(x,y),(x,-y),(-x,-y),(-x,y))\n") #unit
+        f.write("for i in range(len(xyCoords)-1):\n")
+        f.write("\tmySketch.Line(point1=xyCoords[i],point2=xyCoords[i+1])\n")
+        f.write("myPart = myModel.Part(name='Part-1', dimensionality=THREE_D,type=DEFORMABLE_BODY)\n")
+        f.write("myPart.BaseShell(sketch=mySketch)\n")
+        f.write("myPart.Set(faces=myPart.faces.findAt(((0,0,0),)), name='unit')\n")
+
+        f.write("myModel.Material(name='SR_top')\n")
+        f.write("myModel.materials['SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
+        strtemp="("
+        for i in range(len(L[0].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[0].unit.Elastic[i][0])+','+str(L[0].unit.Elastic[i][1])+','+str(L[0].unit.Elastic[i][2])+')'
+            if len(L[0].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_top'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        f.write("myModel.Material(name='SR_btm')\n")
+        f.write("myModel.materials['SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
+        strtemp="("
+        for i in range(len(L[2*model.n].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Elastic[i][0])+','+str(L[2*model.n].unit.Elastic[i][1])+','+str(L[2*model.n].unit.Elastic[i][2])+')'
+            if len(L[2*model.n].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_btm'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        for i in range(model.n-1):
+            f.write("myModel.Material(name='PPG%d')\n" % (i+1))
+            f.write("myModel.materials['PPG%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+2].density))
+            strtemp="("
+            for j in range(len(L[2*i+2].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Elastic[j][0])+','+str(L[2*i+2].unit.Elastic[j][1])+','+str(L[2*i+2].unit.Elastic[j][2])+')'
+                if len(L[2*i+2].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+2].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Expansion[j][0])+'e-06,'+str(L[2*i+2].unit.Expansion[j][1])+')'
+                if len(L[2*i+2].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        for i in range(model.n):
+            f.write("myModel.Material(name='L%d')\n" % (i+1))
+            f.write("myModel.materials['L%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+1].unit.density))
+            strtemp="("
+            for j in range(len(L[2*i+1].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Elastic[j][0])+','+str(L[2*i+1].unit.Elastic[j][1])+','+str(L[2*i+1].unit.Elastic[j][2])+')'
+                if len(L[2*i+1].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['L%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+1].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Expansion[j][0])+'e-06,'+str(L[2*i+1].unit.Expansion[j][1])+')'
+                if len(L[2*i+1].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['L%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='unit', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+        f.write("myPart.compositeLayups['unit'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n")
+        f.write("myPart.compositeLayups['unit'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n")
+        
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='SR_btm', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (L[2*model.n].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (model.n,L[2*model.n-1].thickness))
+        for i in range(model.n-1,0,-1):
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+1),L[2*i].thickness))
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+2),L[2*i-1].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='SR_top', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % ((2*model.n+1),L[0].thickness))
+    
+    elif model.type=='1block':
+        f.write("x=%f\n" % (model.x/2))
+        f.write("y=%f\n" % (model.y/2))
+        f.write("a=%f\n" % model.a)
+        f.write("b=%f\n" % model.b)
+
+        f.write("mySketch = myModel.ConstrainedSketch(name='Sketch A',sheetSize=500.0)\n")
+        f.write("mySketch2 = myModel.ConstrainedSketch(name='Sketch B',sheetSize=500.0)\n")
+        f.write("xyCoordsInner = ((b-x,y-a),(x-b,y-a),(x-b,a-y),(b-x,a-y),(b-x,y-a))\n") #unit
+        f.write("xyCoordsOuter = ((-x,y),(x,y),(x,-y),(-x,-y),(-x,y))\n") #dummy
+        f.write("for i in range(len(xyCoordsInner)-1):\n")
+        f.write("\tmySketch2.Line(point1=xyCoordsInner[i],point2=xyCoordsInner[i+1])\n")
+        f.write("for i in range(len(xyCoordsOuter)-1):\n")
+        f.write("\tmySketch.Line(point1=xyCoordsOuter[i],point2=xyCoordsOuter[i+1])\n")
+        f.write("myPart = myModel.Part(name='Part-1', dimensionality=THREE_D,type=DEFORMABLE_BODY)\n")
+        f.write("myPart.BaseShell(sketch=mySketch)\n")
+        
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((0,0,0),)),sketch=mySketch2)\n")
+        f.write("myPart.Set(faces=myPart.faces.findAt(((x,y,0),)), name='dummy')\n")
+        f.write("myPart.Set(faces=myPart.faces.findAt(((0,0,0),)), name='unit')\n")
+        
+        f.write("mySketch3 = myModel.ConstrainedSketch(name='Sketch C',sheetSize=500.0)\n")
+        f.write("mySketch3.Line(point1=(-x,0),point2=(x,0))\n")
+        f.write("mySketch3.Line(point1=(0,-y),point2=(0,y))\n")
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((0,0,0),)),sketch=mySketch3)\n")
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((x,y,0),)),sketch=mySketch3)\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((-x,y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((-x,-y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((x,-y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(b-x),0.5*(y-a),0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(b-x),0.5*(a-y),0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(x-b),0.5*(a-y),0),)))\n")
+
+        if CheckG.get()==1:
+            f.write("mySketchG = myModel.ConstrainedSketch(name='Sketch G',sheetSize=500.0)\n")
+            f.write("xg=%f/2\n" % (model.x*1.5))
+            f.write("yg=%f/2\n" % (model.y*1.5))
+            f.write("xyCoordsG = ((-xg,yg),(xg,yg),(xg,-yg),(-xg,-yg),(-xg,yg))\n")
+            f.write("for i in range(len(xyCoordsG)-1):\n")
+            f.write("    mySketchG.Line(point1=xyCoordsG[i],point2=xyCoordsG[i+1])\n")
+            f.write("myPartG = myModel.Part(name='Part-2', dimensionality=THREE_D, type=DISCRETE_RIGID_SURFACE)\n")
+            f.write("myPartG.BaseShell(sketch=mySketchG)\n")
+            f.write("RP=myPartG.ReferencePoint(point=(0,0,0))\n")
+        
+        f.write("myModel.Material(name='U_SR_top')\n")
+        f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
+        strtemp="("
+        for i in range(len(L[0].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[0].unit.Elastic[i][0])+','+str(L[0].unit.Elastic[i][1])+','+str(L[0].unit.Elastic[i][2])+')'
+            if len(L[0].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        f.write("myModel.Material(name='U_SR_btm')\n")
+        f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
+        strtemp="("
+        for i in range(len(L[2*model.n].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Elastic[i][0])+','+str(L[2*model.n].unit.Elastic[i][1])+','+str(L[2*model.n].unit.Elastic[i][2])+')'
+            if len(L[2*model.n].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
+        f.write("myModel.Material(name='D_SR_top')\n")
+        f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
+        strtemp="("
+        for i in range(len(L[0].dummy.Elastic)):
+            strtemp=strtemp+'('+str(L[0].dummy.Elastic[i][0])+','+str(L[0].dummy.Elastic[i][1])+','+str(L[0].dummy.Elastic[i][2])+')'
+            if len(L[0].dummy.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        f.write("myModel.Material(name='D_SR_btm')\n")
+        f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
+        strtemp="("
+        for i in range(len(L[2*model.n].dummy.Elastic)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Elastic[i][0])+','+str(L[2*model.n].dummy.Elastic[i][1])+','+str(L[2*model.n].dummy.Elastic[i][2])+')'
+            if len(L[2*model.n].dummy.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
+        for i in range(model.n-1):
+            f.write("myModel.Material(name='PPG%d')\n" % (i+1))
+            f.write("myModel.materials['PPG%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+2].density))
+            strtemp="("
+            for j in range(len(L[2*i+2].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Elastic[j][0])+','+str(L[2*i+2].unit.Elastic[j][1])+','+str(L[2*i+2].unit.Elastic[j][2])+')'
+                if len(L[2*i+2].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+2].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Expansion[j][0])+'e-06,'+str(L[2*i+2].unit.Expansion[j][1])+')'
+                if len(L[2*i+2].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        for i in range(model.n):
+            f.write("myModel.Material(name='U_L%d')\n" % (i+1))
+            f.write("myModel.materials['U_L%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+1].unit.density))
+            strtemp="("
+            for j in range(len(L[2*i+1].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Elastic[j][0])+','+str(L[2*i+1].unit.Elastic[j][1])+','+str(L[2*i+1].unit.Elastic[j][2])+')'
+                if len(L[2*i+1].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['U_L%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+1].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Expansion[j][0])+'e-06,'+str(L[2*i+1].unit.Expansion[j][1])+')'
+                if len(L[2*i+1].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['U_L%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+
+            f.write("myModel.Material(name='D_L%d')\n" % (i+1))
+            f.write("myModel.materials['D_L%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+1].dummy.density))
+            strtemp="("
+            for j in range(len(L[2*i+1].dummy.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+1].dummy.Elastic[j][0])+','+str(L[2*i+1].dummy.Elastic[j][1])+','+str(L[2*i+1].dummy.Elastic[j][2])+')'
+                if len(L[2*i+1].dummy.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].dummy.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['D_L%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+1].dummy.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+1].dummy.Expansion[j][0])+'e-06,'+str(L[2*i+1].dummy.Expansion[j][1])+')'
+                if len(L[2*i+1].dummy.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].dummy.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['D_L%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        if CheckG.get()==1:
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='unit', offsetType=BOTTOM_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='dummy', offsetType=BOTTOM_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+        else:
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='unit', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='dummy', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+        f.write("myPart.compositeLayups['unit'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n")
+        f.write("myPart.compositeLayups['unit'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n")
+        f.write("myPart.compositeLayups['dummy'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n")
+        f.write("myPart.compositeLayups['dummy'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n")
+        
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_SR_btm', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (L[2*model.n].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (model.n,L[2*model.n-1].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_SR_btm', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (L[2*model.n].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (model.n,L[2*model.n-1].thickness))
+        for i in range(model.n-1,0,-1):
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+1),L[2*i].thickness))
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+2),L[2*i-1].thickness))
+            f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+1),L[2*i].thickness))
+            f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+2),L[2*i-1].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_SR_top', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % ((2*model.n+1),L[0].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_SR_top', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % ((2*model.n+1),L[0].thickness))
+    
+    elif model.type=='2block':
+        f.write("x=%f\n" % (model.x/2))
+        f.write("y=%f\n" % (model.y/2))
+        f.write("a=%f\n" % model.a)
+        f.write("b=%f\n" % model.b)
+        f.write("c=%f\n" % (model.c/2))
+
+        f.write("mySketch = myModel.ConstrainedSketch(name='Sketch A',sheetSize=500.0)\n")
+        f.write("mySketch2 = myModel.ConstrainedSketch(name='Sketch B',sheetSize=500.0)\n")
+        f.write("xyCoordsInner1 = ((-c,y-a),(b-x,y-a),(b-x,a-y),(-c,a-y),(-c,y-a))\n") #unit_left
+        f.write("xyCoordsInner2 = ((c,y-a),(x-b,y-a),(x-b,a-y),(c,a-y),(c,y-a))\n") #unit_right
+        f.write("xyCoordsOuter = ((-x,y),(x,y),(x,-y),(-x,-y),(-x,y))\n") #dummy
+        f.write("for i in range(len(xyCoordsInner1)-1):\n")
+        f.write("\tmySketch2.Line(point1=xyCoordsInner1[i],point2=xyCoordsInner1[i+1])\n")
+        f.write("for i in range(len(xyCoordsInner2)-1):\n")
+        f.write("\tmySketch2.Line(point1=xyCoordsInner2[i],point2=xyCoordsInner2[i+1])\n")
+        f.write("for i in range(len(xyCoordsOuter)-1):\n")
+        f.write("\tmySketch.Line(point1=xyCoordsOuter[i],point2=xyCoordsOuter[i+1])\n")
+        f.write("myPart = myModel.Part(name='Part-1', dimensionality=THREE_D,type=DEFORMABLE_BODY)\n")
+        f.write("myPart.BaseShell(sketch=mySketch)\n")
+        
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((0,0,0),)),sketch=mySketch2)\n")
+        f.write("myPart.Set(faces=myPart.faces.findAt(((x,y,0),)), name='dummy')\n")
+        f.write("myPart.Set(faces=myPart.faces.findAt((((b-x-c)/2,0,0),),(((c+x-b)/2,0,0),)), name='unit')\n")
+        
+        f.write("mySketch3 = myModel.ConstrainedSketch(name='Sketch C',sheetSize=500.0)\n")
+        f.write("mySketch3.Line(point1=(-x,0),point2=(x,0))\n")
+        f.write("mySketch3.Line(point1=(0,-y),point2=(0,y))\n")
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt((((b-x-c)/2,0,0),),(((c+x-b)/2,0,0),)),sketch=mySketch3)\n")
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((x,y,0),)),sketch=mySketch3)\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((-x,y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((-x,-y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((x,-y,0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(b-x-c),0.5*(y-a),0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(b-x-c),0.5*(a-y),0),)))\n")
+        f.write("myPart.RemoveFaces(deleteCells=False, faceList=myPart.faces.findAt(((0.5*(x-b+c),0.5*(a-y),0),)))\n")
+
+        if CheckG.get()==1:
+            f.write("mySketchG = myModel.ConstrainedSketch(name='Sketch G',sheetSize=500.0)\n")
+            f.write("xg=%f/2\n" % (model.x*1.5))
+            f.write("yg=%f/2\n" % (model.y*1.5))
+            f.write("xyCoordsG = ((-xg,yg),(xg,yg),(xg,-yg),(-xg,-yg),(-xg,yg))\n")
+            f.write("for i in range(len(xyCoordsG)-1):\n")
+            f.write("    mySketchG.Line(point1=xyCoordsG[i],point2=xyCoordsG[i+1])\n")
+            f.write("myPartG = myModel.Part(name='Part-2', dimensionality=THREE_D, type=DISCRETE_RIGID_SURFACE)\n")
+            f.write("myPartG.BaseShell(sketch=mySketchG)\n")
+            f.write("RP=myPartG.ReferencePoint(point=(0,0,0))\n")
+        
+        f.write("myModel.Material(name='U_SR_top')\n")
+        f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
+        strtemp="("
+        for i in range(len(L[0].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[0].unit.Elastic[i][0])+','+str(L[0].unit.Elastic[i][1])+','+str(L[0].unit.Elastic[i][2])+')'
+            if len(L[0].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
+        f.write("myModel.Material(name='U_SR_btm')\n")
+        f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
+        strtemp="("
+        for i in range(len(L[2*model.n].unit.Elastic)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Elastic[i][0])+','+str(L[2*model.n].unit.Elastic[i][1])+','+str(L[2*model.n].unit.Elastic[i][2])+')'
+            if len(L[2*model.n].unit.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
+        f.write("myModel.Material(name='D_SR_top')\n")
+        f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
+        strtemp="("
+        for i in range(len(L[0].dummy.Elastic)):
+            strtemp=strtemp+'('+str(L[0].dummy.Elastic[i][0])+','+str(L[0].dummy.Elastic[i][1])+','+str(L[0].dummy.Elastic[i][2])+')'
+            if len(L[0].dummy.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        f.write("myModel.Material(name='D_SR_btm')\n")
+        f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
+        strtemp="("
+        for i in range(len(L[2*model.n].dummy.Elastic)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Elastic[i][0])+','+str(L[2*model.n].dummy.Elastic[i][1])+','+str(L[2*model.n].dummy.Elastic[i][2])+')'
+            if len(L[2*model.n].dummy.Elastic)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Elastic)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Elastic(table=%s, temperatureDependency=ON)\n" % (strtemp))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
+        for i in range(model.n-1):
+            f.write("myModel.Material(name='PPG%d')\n" % (i+1))
+            f.write("myModel.materials['PPG%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+2].density))
+            strtemp="("
+            for j in range(len(L[2*i+2].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Elastic[j][0])+','+str(L[2*i+2].unit.Elastic[j][1])+','+str(L[2*i+2].unit.Elastic[j][2])+')'
+                if len(L[2*i+2].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+2].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Expansion[j][0])+'e-06,'+str(L[2*i+2].unit.Expansion[j][1])+')'
+                if len(L[2*i+2].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        for i in range(model.n):
+            f.write("myModel.Material(name='U_L%d')\n" % (i+1))
+            f.write("myModel.materials['U_L%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+1].unit.density))
+            strtemp="("
+            for j in range(len(L[2*i+1].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Elastic[j][0])+','+str(L[2*i+1].unit.Elastic[j][1])+','+str(L[2*i+1].unit.Elastic[j][2])+')'
+                if len(L[2*i+1].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['U_L%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+1].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+1].unit.Expansion[j][0])+'e-06,'+str(L[2*i+1].unit.Expansion[j][1])+')'
+                if len(L[2*i+1].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['U_L%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+
+            f.write("myModel.Material(name='D_L%d')\n" % (i+1))
+            f.write("myModel.materials['D_L%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+1].dummy.density))
+            strtemp="("
+            for j in range(len(L[2*i+1].dummy.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+1].dummy.Elastic[j][0])+','+str(L[2*i+1].dummy.Elastic[j][1])+','+str(L[2*i+1].dummy.Elastic[j][2])+')'
+                if len(L[2*i+1].dummy.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].dummy.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['D_L%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+1].dummy.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+1].dummy.Expansion[j][0])+'e-06,'+str(L[2*i+1].dummy.Expansion[j][1])+')'
+                if len(L[2*i+1].dummy.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+1].dummy.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['D_L%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+        
+        if CheckG.get()==1:
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='unit', offsetType=BOTTOM_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='dummy', offsetType=BOTTOM_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+        else:
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='unit', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+            f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='dummy', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n")
+        f.write("myPart.compositeLayups['unit'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n")
+        f.write("myPart.compositeLayups['unit'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n")
+        f.write("myPart.compositeLayups['dummy'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n")
+        f.write("myPart.compositeLayups['dummy'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n")
+        
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_SR_btm', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (L[2*model.n].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (model.n,L[2*model.n-1].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_SR_btm', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (L[2*model.n].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (model.n,L[2*model.n-1].thickness))
+        for i in range(model.n-1,0,-1):
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+1),L[2*i].thickness))
+            f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+2),L[2*i-1].thickness))
+            f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+1),L[2*i].thickness))
+            f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_L%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,(2*(model.n-i)+2),L[2*i-1].thickness))
+        f.write("myPart.compositeLayups['unit'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='U_SR_top', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['unit'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % ((2*model.n+1),L[0].thickness))
+        f.write("myPart.compositeLayups['dummy'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='D_SR_top', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['dummy'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % ((2*model.n+1),L[0].thickness))
+
+    elif model.type=='meshed':
+        f.write("x=%f\n" % model.x)
+        f.write("y=%f\n" % model.y)
+        f.write("nrow=%d\n" % model.row)
+        f.write("ncol=%d\n" % model.col)
+        
+        f.write("mySketch = myModel.ConstrainedSketch(name='Sketch A',sheetSize=500.0)\n")
+        f.write("xyCoords = ((0,0),(x,0),(x,y),(0,y),(0,0))\n")
+        f.write("for i in range(len(xyCoords)-1):\n")
+        f.write("    mySketch.Line(point1=xyCoords[i],point2=xyCoords[i+1])\n")
+
+        f.write("mySketch2 = myModel.ConstrainedSketch(name='Sketch B',sheetSize=500.0)\n")
+        f.write("for i in range(1,ncol):\n")
+        f.write("    mySketch2.Line(point1=(i*(x/ncol),0),point2=(i*(x/ncol),y))\n")
+        f.write("for i in range(1,nrow):\n")
+        f.write("    mySketch2.Line(point1=(0,i*(y/nrow)),point2=(x,i*(y/nrow)))\n")
+
+        f.write("myPart = myModel.Part(name='Part-1', dimensionality=THREE_D,type=DEFORMABLE_BODY)\n")
+        
+        f.write("myPart.BaseShell(sketch=mySketch)\n")
+        f.write("myPart.PartitionFaceBySketch(faces=myPart.faces.findAt(((0,0,0),)),sketch=mySketch2)\n")
+        for i in range(model.row):
+            for j in range(model.col):
+                f.write("myPart.Set(faces=myPart.faces.findAt(((%f,%f,0),)), name='Set_%d_%d')\n" % (((j+0.5)*(model.x/model.col)),(model.y-(i+0.5)*(model.y/model.row)),i,j))
+                f.write("myPart.CompositeLayup(description='', elementType=SHELL, name='Set_%d_%d', offsetType=MIDDLE_SURFACE, symmetric=False, thicknessAssignment=FROM_SECTION)\n" % (i,j))
+                f.write("myPart.compositeLayups['Set_%d_%d'].Section(integrationRule=SIMPSON, poissonDefinition=DEFAULT, preIntegrate=OFF, temperature=GRADIENT, thicknessType=UNIFORM, useDensity=OFF)\n" % (i,j))
+                f.write("myPart.compositeLayups['Set_%d_%d'].ReferenceOrientation(additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, fieldName='', localCsys=None, orientationType=GLOBAL)\n" % (i,j))
+        
+        for i in range(model.n-1):
+            f.write("myModel.Material(name='PPG%d')\n" % (i+1))
+            f.write("myModel.materials['PPG%d'].Density(table=((%fe-09,),))\n" % ((i+1), L[2*i+2].density))
+            strtemp="("
+            for j in range(len(L[2*i+2].unit.Elastic)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Elastic[j][0])+','+str(L[2*i+2].unit.Elastic[j][1])+','+str(L[2*i+2].unit.Elastic[j][2])+')'
+                if len(L[2*i+2].unit.Elastic)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Elastic)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            strtemp='('
+            for j in range(len(L[2*i+2].unit.Expansion)):
+                strtemp=strtemp+'('+str(L[2*i+2].unit.Expansion[j][0])+'e-06,'+str(L[2*i+2].unit.Expansion[j][1])+')'
+                if len(L[2*i+2].unit.Expansion)==1:
+                    strtemp=strtemp+',)'
+                    break
+                if j==(len(L[2*i+2].unit.Expansion)-1):
+                    strtemp=strtemp+')'
+                else:
+                    strtemp=strtemp+','
+            f.write("myModel.materials['PPG%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),strtemp))
+            
+        for i in range(model.row):
+            for j in range(model.col):
+                f.write("myModel.Material(name='SR_top_%d_%d')\n" % (i,j))
+                f.write("myModel.materials['SR_top_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[0].section[i][j].density))
+                strtemp="("
+                for k in range(len(L[0].section[i][j].Elastic)):
+                    strtemp=strtemp+'('+str(L[0].section[i][j].Elastic[k][0])+','+str(L[0].section[i][j].Elastic[k][1])+','+str(L[0].section[i][j].Elastic[k][2])+')'
+                    if len(L[0].section[i][j].Elastic)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[0].section[i][j].Elastic)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_top_%d_%d'].Elastic(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
+                strtemp='('
+                for k in range(len(L[0].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[0].section[i][j].Expansion[k][0])+'e-06,'+str(L[0].section[i][j].Expansion[k][1])+')'
+                    if len(L[0].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[0].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
+                
+                f.write("myModel.Material(name='SR_btm_%d_%d')\n" % (i,j))
+                f.write("myModel.materials['SR_btm_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[2*model.n].section[i][j].density))
+                strtemp="("
+                for k in range(len(L[2*model.n].section[i][j].Elastic)):
+                    strtemp=strtemp+'('+str(L[2*model.n].section[i][j].Elastic[k][0])+','+str(L[2*model.n].section[i][j].Elastic[k][1])+','+str(L[2*model.n].section[i][j].Elastic[k][2])+')'
+                    if len(L[2*model.n].section[i][j].Elastic)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[2*model.n].section[i][j].Elastic)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_btm_%d_%d'].Elastic(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
+                strtemp='('
+                for k in range(len(L[2*model.n].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[2*model.n].section[i][j].Expansion[k][0])+'e-06,'+str(L[2*model.n].section[i][j].Expansion[k][1])+')'
+                    if len(L[2*model.n].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[2*model.n].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
+                
+        for i in range(model.n):    
+            for row in range(model.row):
+                for col in range(model.col):
+                    f.write("myModel.Material(name='L%d_%d_%d')\n" % ((i+1),row,col))
+                    f.write("myModel.materials['L%d_%d_%d'].Density(table=((%fe-09,),))\n" % ((i+1),row,col, L[2*i+1].section[row][col].density))
+                    strtemp="("
+                    for k in range(len(L[2*i+1].section[row][col].Elastic)):
+                        strtemp=strtemp+'('+str(L[2*i+1].section[row][col].Elastic[k][0])+','+str(L[2*i+1].section[row][col].Elastic[k][1])+','+str(L[2*i+1].section[row][col].Elastic[k][2])+')'
+                        if len(L[2*i+1].section[row][col].Elastic)==1:
+                            strtemp=strtemp+',)'
+                            break
+                        if k==(len(L[2*i+1].section[row][col].Elastic)-1):
+                            strtemp=strtemp+')'
+                        else:
+                            strtemp=strtemp+','
+                    f.write("myModel.materials['L%d_%d_%d'].Elastic(table=%s, temperatureDependency=ON)\n" % ((i+1),row,col,strtemp))
+                    strtemp='('
+                    for k in range(len(L[2*i+1].section[row][col].Expansion)):
+                        strtemp=strtemp+'('+str(L[2*i+1].section[row][col].Expansion[k][0])+'e-06,'+str(L[2*i+1].section[row][col].Expansion[k][1])+')'
+                        if len(L[2*i+1].section[row][col].Expansion)==1:
+                            strtemp=strtemp+',)'
+                            break
+                        if k==(len(L[2*i+1].section[row][col].Expansion)-1):
+                            strtemp=strtemp+')'
+                        else:
+                            strtemp=strtemp+','
+                    f.write("myModel.materials['L%d_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % ((i+1),row,col,strtemp))
+                    
+        for i in range(model.row):
+            for j in range(model.col):
+                f.write("myPart.compositeLayups['Set_%d_%d'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='SR_btm_%d_%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-1', region=myPart.sets['Set_%d_%d'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,j,i,j,i,j,L[2*model.n].thickness))
+                f.write("myPart.compositeLayups['Set_%d_%d'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='L%d_%d_%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-2', region=myPart.sets['Set_%d_%d'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,j,model.n,i,j,i,j,L[2*model.n-1].thickness))
+                for k in range(model.n-1,0,-1):
+                    f.write("myPart.compositeLayups['Set_%d_%d'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='PPG%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['Set_%d_%d'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,j,k,(2*(model.n-k)+1),i,j,L[2*k].thickness))
+                    f.write("myPart.compositeLayups['Set_%d_%d'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='L%d_%d_%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['Set_%d_%d'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,j,k,i,j,(2*(model.n-k)+2),i,j,L[2*k-1].thickness))
+                f.write("myPart.compositeLayups['Set_%d_%d'].CompositePly(additionalRotationField='', additionalRotationType=ROTATION_NONE, angle=0.0, axis=AXIS_3, material='SR_top_%d_%d', numIntPoints=3, orientationType=SPECIFY_ORIENT, orientationValue=0.0, plyName='Ply-%d', region=myPart.sets['Set_%d_%d'], suppressed=False, thickness=%f, thicknessType=SPECIFY_THICKNESS)\n" % (i,j,i,j,(2*model.n+1),i,j,L[0].thickness))   
+
+    f.write("myModel.rootAssembly.DatumCsysByDefault(CARTESIAN)\n")
+    f.write("myModel.rootAssembly.Instance(dependent=ON, name='Part-1-1', part=myPart)\n")
+    
+    if (CheckG.get()==1): #1block, 2block
+        f.write("myModel.rootAssembly.Instance(dependent=ON, name='Part-2-1', part=myPartG)\n")
+        f.write("myModel.rootAssembly.Set(name='RP', referencePoints=(myModel.rootAssembly.instances['Part-2-1'].referencePoints[RP.id], ))\n")
+        
+        f.write("myModel.rootAssembly.Surface(name='Ground', side1Faces=myModel.rootAssembly.instances['Part-2-1'].faces.findAt(((0,0,0),)))\n")
+        if model.type=='1block': f.write("myModel.rootAssembly.Surface(name='strip', side2Faces=myModel.rootAssembly.instances['Part-1-1'].faces.findAt(((0,0,0),),((x-b/2,0,0),)))\n")
+        elif model.type=='2block': f.write("myModel.rootAssembly.Surface(name='strip', side2Faces=myModel.rootAssembly.instances['Part-1-1'].faces.findAt(((0,0,0),),((0.5*(x-b+c),0,0),)))\n")
+
+    if CheckG.get()==1: f.write("myModel.StaticStep(initialInc=0.1, name='Step-1', nlgeom=ON, previous='Initial', maxNumInc=1000000, minInc=1e-12)\n")
+    else: f.write("myModel.StaticStep(initialInc=0.1, name='Step-1', nlgeom=ON, previous='Initial', maxNumInc=10000, minInc=1e-08)\n")
+
+    if model.type=='unit':
+        f.write("myModel.rootAssembly.Set(name='xyz', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((-x,-y,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='yz', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((x,-y,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='z', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((-x,y,0),)))\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='xyz', region=myModel.rootAssembly.sets['xyz'], u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='yz', region=myModel.rootAssembly.sets['yz'], u1=UNSET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='z', region=myModel.rootAssembly.sets['z'], u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+    elif model.type=='1block':
+        f.write("myModel.rootAssembly.Set(name='xsymm', edges=myModel.rootAssembly.instances['Part-1-1'].edges.findAt(((0,(y-a)/2,0),),((0,y-a/2,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='ysymm', edges=myModel.rootAssembly.instances['Part-1-1'].edges.findAt((((x-b)/2,0,0),),((x-b/2,0,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='center', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((0,0,0),)))\n")
+
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='xsymm', region=myModel.rootAssembly.sets['xsymm'], u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=SET, ur3=SET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='ysymm', region=myModel.rootAssembly.sets['ysymm'], u1=UNSET, u2=SET, u3=UNSET, ur1=SET, ur2=UNSET, ur3=SET)\n")
+        if (CheckG.get()==1): f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='center', region=myModel.rootAssembly.sets['center'], u1=SET, u2=SET, u3=UNSET, ur1=SET, ur2=SET, ur3=UNSET)\n")
+        else: f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='center', region=myModel.rootAssembly.sets['center'], u1=SET, u2=SET, u3=SET, ur1=SET, ur2=SET, ur3=SET)\n")
+    elif model.type=='2block':
+        f.write("myModel.rootAssembly.Set(name='xsymm', edges=myModel.rootAssembly.instances['Part-1-1'].edges.findAt(((0,(y-a)/2,0),),((0,y-a/2,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='ysymm', edges=myModel.rootAssembly.instances['Part-1-1'].edges.findAt(((c/2,0,0),),(((c+x-b)/2,0,0),),((x-b/2,0,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='center', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((0,0,0),)))\n")
+
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='xsymm', region=myModel.rootAssembly.sets['xsymm'], u1=SET, u2=UNSET, u3=UNSET, ur1=UNSET, ur2=SET, ur3=SET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='ysymm', region=myModel.rootAssembly.sets['ysymm'], u1=UNSET, u2=SET, u3=UNSET, ur1=SET, ur2=UNSET, ur3=SET)\n")
+        if (CheckG.get()==1): f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='center', region=myModel.rootAssembly.sets['center'], u1=SET, u2=SET, u3=UNSET, ur1=SET, ur2=SET, ur3=UNSET)\n")
+        else: f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='center', region=myModel.rootAssembly.sets['center'], u1=SET, u2=SET, u3=SET, ur1=SET, ur2=SET, ur3=SET)\n")
+
+    elif model.type=='meshed':
+        f.write("myModel.rootAssembly.Set(name='xyz', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((0,0,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='yz', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((x,0,0),)))\n")
+        f.write("myModel.rootAssembly.Set(name='z', vertices=myModel.rootAssembly.instances['Part-1-1'].vertices.findAt(((0,y,0),)))\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='xyz', region=myModel.rootAssembly.sets['xyz'], u1=SET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='yz', region=myModel.rootAssembly.sets['yz'], u1=UNSET, u2=SET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='z', region=myModel.rootAssembly.sets['z'], u1=UNSET, u2=UNSET, u3=SET, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+    
+    f.write("myModel.rootAssembly.Set(name='Set-4', edges=myModel.rootAssembly.instances['Part-1-1'].edges, faces=myModel.rootAssembly.instances['Part-1-1'].faces, vertices=myModel.rootAssembly.instances['Part-1-1'].vertices)\n")
+    
+    if CheckG.get()==1:
+        f.write("myModel.StaticStep(initialInc=0.1, name='Step-2', previous='Step-1')\n")
+        f.write("myModel.ContactProperty('IntProp-1')\n")
+        f.write("myModel.interactionProperties['IntProp-1'].TangentialBehavior(dependencies=0, directionality=ISOTROPIC, elasticSlipStiffness=None, formulation=PENALTY, fraction=0.005, maximumElasticSlip=FRACTION, pressureDependency=OFF, shearStressLimit=None, slipRateDependency=OFF, table=((0.1, ), ), temperatureDependency=OFF)\n")
+        f.write("myModel.SurfaceToSurfaceContactStd(adjustMethod=NONE, clearanceRegion=None, createStepName='Initial', datumAxis=None, initialClearance=OMIT, interactionProperty='IntProp-1', main=myModel.rootAssembly.surfaces['Ground'], name='Int-1', secondary=myModel.rootAssembly.surfaces['strip'], sliding=FINITE, thickness=ON)\n")
+        f.write("myModel.rootAssembly.Set(faces=myModel.rootAssembly.instances['Part-2-1'].faces.findAt(((0,0,0),)), name='b_Set-6')\n")
+        f.write("myModel.RigidBody(bodyRegion=myModel.rootAssembly.sets['b_Set-6'], name='Constraint-1', refPointRegion=myModel.rootAssembly.sets['RP'])\n")
+        f.write("myModel.Gravity(comp3=-2000.0, createStepName='Step-1', distributionType=UNIFORM, field='', name='Load-1', region=myModel.rootAssembly.sets['Set-4'])\n")
+    
+    f.write("myModel.Temperature(createStepName='Initial', crossSectionDistribution=CONSTANT_THROUGH_THICKNESS, distributionType=UNIFORM, magnitudes=(150.0, ), name='Predefined Field-1', region=myModel.rootAssembly.sets['Set-4'])\n")
+    
+    if CheckG.get()==1:
+        f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(150.0, ), stepName='Step-1')\n")
+    else:
+        f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(25.0, ), stepName='Step-1')\n")
+    
+    model.step.append(200)
+    model.step.append(260)
+    if CheckG.get()==0:
+        for i in range(len(model.step)):
+            f.write("myModel.StaticStep(initialInc=0.1, name='Step-%d', previous='Step-%d')\n" % ((i+2),(i+1)))
+            f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(%f, ), stepName='Step-%d')\n" % (model.step[i],(i+2)))
+
+    f.write("myPart.seedPart(deviationFactor=0.1, minSizeFactor=0.1, size=%f)\n" %(round(max(model.x,model.y)/100,1)))
+    f.write("myPart.generateMesh()\n")
+
+    if CheckG.get()==1:
+        f.write("myPartG.seedPart(deviationFactor=0.1, minSizeFactor=0.1, size=%f)\n" % (max(model.x,model.y)*1.5))
+        f.write("myPartG.generateMesh()\n")
+        #f.write("myModel.EncastreBC(createStepName='Initial', localCsys=None, name='RP', region=myModel.rootAssembly.sets['RP'])\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Initial', distributionType=UNIFORM, fieldName='', localCsys=None, name='RP', region=myModel.rootAssembly.sets['RP'], u1=SET, u2=SET, u3=SET, ur1=SET, ur2=SET, ur3=SET)\n")
+        f.write("myModel.StaticStep(name='Step-3', previous='Step-2')\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Step-1', distributionType=UNIFORM, fieldName='', fixed=OFF, localCsys=None, name='center-DISP', region=myModel.rootAssembly.sets['center'], u1=UNSET, u2=UNSET, u3=-0.0001, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Step-1', distributionType=UNIFORM, fieldName='', fixed=OFF, localCsys=None, name='Xsymm-DISP', region=myModel.rootAssembly.sets['xsymm'], u1=UNSET, u2=UNSET, u3=-0.0001, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.DisplacementBC(amplitude=UNSET, createStepName='Step-1', distributionType=UNIFORM, fieldName='', fixed=OFF, localCsys=None, name='Ysymm-DISP', region=myModel.rootAssembly.sets['ysymm'], u1=UNSET, u2=UNSET, u3=-0.0001, ur1=UNSET, ur2=UNSET, ur3=UNSET)\n")
+        f.write("myModel.boundaryConditions['Xsymm-DISP'].deactivate('Step-2')\n")
+        f.write("myModel.boundaryConditions['Ysymm-DISP'].deactivate('Step-2')\n")
+        f.write("myModel.boundaryConditions['center-DISP'].deactivate('Step-2')\n")
+        f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(150.0, ), stepName='Step-2')\n")
+        f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(25.0, ), stepName='Step-3')\n")
+        for i in range(len(model.step)):
+            f.write("myModel.StaticStep(initialInc=0.1, name='Step-%d', previous='Step-%d')\n" % ((i+4),(i+3)))
+            f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(%f, ), stepName='Step-%d')\n" % (model.step[i],(i+4)))
+    
+    f.write("myModel.rootAssembly.regenerate()\n")
+    f.write("mdb.models.changeKey(fromName='Model-1', toName='POR')\n")
+    if CheckCPU.get()==1: cpu=32
+    else: cpu=4
+    f.write("mdb.Job(atTime=None, contactPrint=OFF, description='', echoPrint=OFF, explicitPrecision=SINGLE, getMemoryFromAnalysis=True, historyPrint=OFF, memory=90, memoryUnits=PERCENTAGE, model='POR', modelPrint=OFF, multiprocessingMode=DEFAULT, name='POR', nodalOutputPrecision=SINGLE, numCpus=%d, numDomains=%d, numGPUs=0, numThreadsPerMpiProcess=1, queue=None, resultsFormat=ODB, scratch='', type=ANALYSIS, userSubroutine='', waitHours=0, waitMinutes=0)\n" % (cpu,cpu))
+    
+    f.write("mdb.saveAs(pathName='%s_HighT')\n" % model.project)
+    if CheckJob.get()==0: return True
+    f.write("mdb.jobs['POR'].submit(consistencyChecking=OFF)\n")
+    f.write("mdb.jobs['POR'].waitForCompletion()\n")
+    #Error in job POR: Time increment required is less than the minimum specified
+    """
+    f.write("myViewport=session.Viewport(name='Warpage (%s)',origin=(0,0),width=200,height=130)\n" % (model.project))
+
+    f.write("myOdb=visualization.openOdb(path='POR.odb')\n")
+    f.write("myViewport.setValues(displayedObject=myOdb)\n")
+    f.write("myViewport.odbDisplay.setPrimaryVariable(variableLabel='U',outputPosition=NODAL,refinement=(COMPONENT,'U3'))\n")
+    f.write("myViewport.odbDisplay.display.setValues(plotState=(CONTOURS_ON_DEF,))\n")
+    #f.write("myViewport.maximize()\n")
+    f.write("myViewport.view.fitView()\n")
+    #f.write("session.printOptions.setValues(vpBackground=ON)\n")
+    if (model.type=='1block')|(model.type=='2block'):
+        f.write("myViewport.odbDisplay.basicOptions.setValues(mirrorAboutXzPlane=ON, mirrorAboutYzPlane=ON)\n")
+    else:
+        f.write("myViewport.odbDisplay.basicOptions.setValues(mirrorAboutXzPlane=OFF, mirrorAboutYzPlane=OFF)\n")
+    f.write("session.printToFile(fileName='%s_img', format=PNG, canvasObjects=(myViewport,))\n" % model.project)
+    
+    #
+    f.write("f=open('%s_result.txt','w')\n" % model.project)
+    f.write("strMinMax=myViewport.getPrimVarMinMaxLoc()\n")
+    f.write("f.write(str(strMinMax)+'\\n\\n')\n")
+    #f.write("if (strMinMax['minNodeLabel']==1)|(strMinMax['maxNodeLabel']==7): warpage=strMinMax['minValue']-strMinMax['maxValue']\n") #smile -
+    #f.write("elif (strMinMax['maxNodeLabel']==1)|(strMinMax['minNodeLabel']==7): warpage=strMinMax['maxValue']-strMinMax['minValue']\n") #crying +
+    #f.write("else: warpage=0\n")
+    if CheckG.get()==1:
+        f.write("fieldValues=myOdb.steps['Step-3'].frames[-1].fieldOutputs['U'].values\n")
+    else:
+        f.write("fieldValues=myOdb.steps['Step-1'].frames[-1].fieldOutputs['U'].values\n")
+    
+    if model.type=='unit':
+        f.write("for v in fieldValues:\n")
+        f.write("    if v.nodeLabel==1: z1=v.data[2]\n")
+        f.write("if (z1>((strMinMax['maxValue']+strMinMax['minValue'])/2)): warpage=strMinMax['minValue']-strMinMax['maxValue']; sc='smile'\n")
+        f.write("elif (z1<((strMinMax['maxValue']+strMinMax['minValue'])/2)): warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='crying'\n")
+        f.write("else: warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='none'\n")
+    elif (model.type=='1block')|(model.type=='2block'):
+        f.write("for v in fieldValues:\n")
+        f.write("    if v.nodeLabel==1: z1=v.data[2]\n")
+        f.write("    elif v.nodeLabel==5: z5=v.data[2]\n")
+        f.write("    elif v.nodeLabel==6: z6=v.data[2]\n")
+        f.write("    elif v.nodeLabel==7: z7=v.data[2]; break\n")
+        f.write("if z1<((z5+z6+z7)/3): warpage=strMinMax['minValue']-strMinMax['maxValue']; sc='smile'\n")
+        f.write("elif z1>((z5+z6+z7)/3): warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='crying'\n")
+        f.write("else: warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='none'\n")
+    elif model.type=='meshed':
+        f.write("for v in fieldValues:\n")
+        f.write("    if v.nodeLabel==3: z3=v.data[2]\n")
+        f.write("if (z3>((strMinMax['maxValue']+strMinMax['minValue'])/2)): warpage=strMinMax['minValue']-strMinMax['maxValue']; sc='smile'\n")
+        f.write("elif (z3<((strMinMax['maxValue']+strMinMax['minValue'])/2)): warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='crying'\n")
+        f.write("else: warpage=strMinMax['maxValue']-strMinMax['minValue']; sc='none'\n")
+    f.write("f.write('warpage : '+str(round(warpage,3))+'\\n'+sc)\n")
+    f.write("f.close()\n")
+    """
+    return True
+
+def btnHighTClick():
+    if entry_project.get()=='':
+        messagebox.showwarning(title="error",message="Enter project name.")
+        return
+    model.project=entry_project.get()
+    """
+    if updatedata()==False:
+        messagebox.showwarning(title="error",message="Failed to update input data")
+        return
+    """
+    if os.path.exists('D:/AbaqusSim')==False:
+        os.mkdir('D:/AbaqusSim')
+    
+    if os.path.exists('D:/AbaqusSim/%s' % model.project)==False:
+        os.mkdir('D:/AbaqusSim/%s' % model.project)
+    
+    if os.path.exists('D:/AbaqusSim/%s/HighT' % model.project)==False:
+        os.mkdir('D:/AbaqusSim/%s/HighT' % model.project)
+
+    os.chdir('D:/AbaqusSim/%s/HighT' % model.project)
+
+    #SaveInput('D:/AbaqusSim/%s/HighT' % model.project) #수정필요
+
+    if writescriptHighT()==False:
+        messagebox.showwarning(title="error",message="failed to write script (HighT)")
+        return
+
+    if CheckGUI.get()==1: os.system("abaqus cae script=%s_HighT.py" % model.project)
+    else: os.system("abaqus cae nogui=%s_HighT.py" % model.project)
+    """
+    if CheckJob.get()==1:
+        try:
+            f=open("D:/AbaqusSim/%s/HighT/%s_HighT_result.txt" % (model.project,model.project),'r')
+        except:
+            messagebox.showwarning(title="error",message="failed to open result file (HighT)")
+            return
+        #수정필요
+        f.readline()
+        f.readline()
+        result=f.readline().strip()
+        sc=f.readline().strip()
+        f.close()
+        
+        label_result_warpage.config(text=result+' ('+sc+')')
+        button_result_warpage.place(x=1130, y=80, width=40, height=25)
+        check_warpage.place(x=1180, y=80, width=15, height=25)
+    else:
+        if CheckGUI.get()==0:
+            messagebox.showwarning(title="HighT", message="modeling completed (HighT)")
+    """
+    return
+
 def SaveInput(dir):
     now=datetime.now()
     time=now.strftime("%Y%m%d_%H%M")
@@ -4359,7 +5826,7 @@ list_Density_dummy=[]   #col 17
 
 win=tk.Tk()
 win.geometry('1300x700+50+50')
-win.title("Warpage & Material Properties Simulation (test ver.)")
+win.title("Warpage & Material Properties Simulation ver.1.0")
 
 try:
     df=pd.read_csv('data.csv')
@@ -4486,6 +5953,8 @@ check_gui=tk.Checkbutton(win, text="GUI", variable=CheckGUI)
 
 CheckJob=tk.IntVar()
 check_job=tk.Checkbutton(win, text="job", variable=CheckJob)
+
+button_highT=tk.Button(win, text='high T', command=btnHighTClick)
 
 try:
     fc=open("customer.txt",'r')
