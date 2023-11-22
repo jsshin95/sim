@@ -691,6 +691,218 @@ def btnNoClick(x): #x=Layer No.
                 btnExDummyPopClick()
             while len(list_El_Modulus_dummy)>0:
                 btnElDummyPopClick()
+            
+            if Tg<150:
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(150-Tg))/150,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,150)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(175-Tg))/175,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,175)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,cte1d)
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,Tg)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(150-Tg))/150,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,150)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(175-Tg))/175,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,175)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(200-Tg))/200,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,200)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,260)
+            elif (Tg>=150)&(Tg<175):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(175-Tg))/175,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,175)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,cte1d)
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,Tg)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(175-Tg))/175,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,175)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(200-Tg))/200,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,200)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,260)
+            elif (Tg>=175)&(Tg<200):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,cte1d)
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,Tg)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(200-Tg))/200,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,200)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,260)
+            elif (Tg>=200)&(Tg<260):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,cte1d)
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,Tg)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,260)
+            else:
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
+                list_Ex_dummy[-1].insert(0,cte1d)
+                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
+                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
+                list_Ex_Temp_dummy[-1].insert(0,Tg)
+
 
             if Tg>=255:
                 list_El_Modulus_unit.append(tk.Entry(frame_Elastic_unit, width=10))
@@ -753,20 +965,6 @@ def btnNoClick(x): #x=Layer No.
                 list_El_Temp_dummy.append(tk.Entry(frame_Elastic_dummy, width=10))
                 list_El_Temp_dummy[-1].grid(row=len(list_El_Temp_dummy), column=2)
                 list_El_Temp_dummy[-1].insert(0,260)
-
-                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                list_Ex_unit[-1].insert(0,cte1u)
-                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                list_Ex_Temp_unit[-1].insert(0,Tg)
-
-                list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                list_Ex_dummy[-1].insert(0,cte1d)
-                list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                list_Ex_Temp_dummy[-1].insert(0,Tg)
             else:
                 list_El_Modulus_unit.append(tk.Entry(frame_Elastic_unit, width=10))
                 list_El_Modulus_unit[-1].grid(row=len(list_El_Modulus_unit), column=0)
@@ -849,76 +1047,6 @@ def btnNoClick(x): #x=Layer No.
                 list_El_Temp_dummy[-1].grid(row=len(list_El_Temp_dummy), column=2)
                 list_El_Temp_dummy[-1].insert(0,260)
 
-                if Tg<200:
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,cte1u)
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,Tg)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,200)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,260)
-
-                    list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                    list_Ex_dummy[-1].insert(0,cte1d)
-                    list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                    list_Ex_Temp_dummy[-1].insert(0,Tg)
-
-                    list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                    list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(200-Tg))/200,2))
-                    list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                    list_Ex_Temp_dummy[-1].insert(0,200)
-
-                    list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                    list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
-                    list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                    list_Ex_Temp_dummy[-1].insert(0,260)
-                else:
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,cte1u)
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,Tg)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,260)
-
-                    list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                    list_Ex_dummy[-1].insert(0,cte1d)
-                    list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                    list_Ex_Temp_dummy[-1].insert(0,Tg)
-
-                    list_Ex_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_dummy[-1].grid(row=len(list_Ex_dummy), column=0)
-                    list_Ex_dummy[-1].insert(0,round((cte1d*Tg+cte2d*(260-Tg))/260,2))
-                    list_Ex_Temp_dummy.append(tk.Entry(frame_Expansion_dummy, width=10))
-                    list_Ex_Temp_dummy[-1].grid(row=len(list_Ex_Temp_dummy), column=1)
-                    list_Ex_Temp_dummy[-1].insert(0,260)
         else:
             try:
                 cte1u=float(entry_CTE1_unit.get())
@@ -937,6 +1065,112 @@ def btnNoClick(x): #x=Layer No.
                 btnExUnitPopClick()
             while len(list_El_Modulus_unit)>0:
                 btnElUnitPopClick()
+            
+            if Tg<150:
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(150-Tg))/150,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,150)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(175-Tg))/175,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,175)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+            elif (Tg>=150)&(Tg<175):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(175-Tg))/175,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,175)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+            elif (Tg>=175)&(Tg<200):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,200)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+            elif (Tg>=200)&(Tg<260):
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
+
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,260)
+            else:
+                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
+                list_Ex_unit[-1].insert(0,cte1u)
+                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
+                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
+                list_Ex_Temp_unit[-1].insert(0,Tg)
             
             if Tg>=255:
                 list_El_Modulus_unit.append(tk.Entry(frame_Elastic_unit, width=10))
@@ -978,13 +1212,6 @@ def btnNoClick(x): #x=Layer No.
                 list_El_Temp_unit.append(tk.Entry(frame_Elastic_unit, width=10))
                 list_El_Temp_unit[-1].grid(row=len(list_El_Temp_unit), column=2)
                 list_El_Temp_unit[-1].insert(0,260)
-
-                list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                list_Ex_unit[-1].insert(0,cte1u)
-                list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                list_Ex_Temp_unit[-1].insert(0,Tg)
             else:
                 list_El_Modulus_unit.append(tk.Entry(frame_Elastic_unit, width=10))
                 list_El_Modulus_unit[-1].grid(row=len(list_El_Modulus_unit), column=0)
@@ -1038,41 +1265,7 @@ def btnNoClick(x): #x=Layer No.
                 list_El_Temp_unit.append(tk.Entry(frame_Elastic_unit, width=10))
                 list_El_Temp_unit[-1].grid(row=len(list_El_Temp_unit), column=2)
                 list_El_Temp_unit[-1].insert(0,260)
-                if Tg<200:
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,cte1u)
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,Tg)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(200-Tg))/200,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,200)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,260)
-                else:
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,cte1u)
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,Tg)
-
-                    list_Ex_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_unit[-1].grid(row=len(list_Ex_unit), column=0)
-                    list_Ex_unit[-1].insert(0,round((cte1u*Tg+cte2u*(260-Tg))/260,2))
-                    list_Ex_Temp_unit.append(tk.Entry(frame_Expansion_unit, width=10))
-                    list_Ex_Temp_unit[-1].grid(row=len(list_Ex_Temp_unit), column=1)
-                    list_Ex_Temp_unit[-1].insert(0,260)
+                
         return
     
     def btnMP2ApplyClick():
@@ -1737,6 +1930,7 @@ def btnEnterClick():
     for i in range(2*model.n+1):
         list_Modulus.append(tk.Entry(frame.scrollable_frame, width=6))
         list_Modulus[i].grid(row=i, column=3)
+        if i%2==1: list_Modulus[i].insert(0,75000)
     
     if len(list_CTE)>0:
         for i in range(len(list_CTE)):
@@ -1745,6 +1939,7 @@ def btnEnterClick():
     for i in range(2*model.n+1):
         list_CTE.append(tk.Entry(frame.scrollable_frame, width=6))
         list_CTE[i].grid(row=i, column=4)
+        if i%2==1: list_CTE[i].insert(0,17)
 
     if len(list_Poisson)>0:
         for i in range(len(list_Poisson)):
@@ -1753,6 +1948,7 @@ def btnEnterClick():
     for i in range(2*model.n+1):
         list_Poisson.append(tk.Entry(frame.scrollable_frame, width=6))
         list_Poisson[i].grid(row=i, column=5)
+        if i%2==1: list_Poisson[i].insert(0,0.34)
     
     if len(list_Density)>0:
         for i in range(len(list_Density)):
@@ -1761,6 +1957,7 @@ def btnEnterClick():
     for i in range(2*model.n+1):
         list_Density.append(tk.Entry(frame.scrollable_frame, width=6))
         list_Density[i].grid(row=i, column=6)
+        if i%2==1: list_Density[i].insert(0,8.9)
     
     if len(list_Fill)>0:
         for i in range(len(list_Fill)):
@@ -1887,9 +2084,9 @@ def btnEnterClick():
                 list_Portion_dummy[i].grid_forget()
         del list_Portion_dummy[0:]
 
-    button_calc.place(x=35, y=370, width=70, height=30)
-    button_save_input.place(x=35, y=450, width=70, height=30)
-    button_load_input.place(x=35, y=500, width=70, height=30)
+    button_calc.place(x=35, y=430, width=70, height=30)
+    button_save_input.place(x=35, y=480, width=70, height=30)
+    button_load_input.place(x=35, y=525, width=70, height=30)
 
     entry_project.delete(0,tk.END)
     label_result_SQBC.config(text='')
@@ -2001,21 +2198,32 @@ def btnCalcClick():
                 L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
                 L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, 250])
                 L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
-
-                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
             else:
                 L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
                 L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, L[0].Tg-5])
                 L[0].unit.Elastic.append([L[0].unit.modulus2+10**(int(math.log10(L[0].unit.modulus2))-1), L[0].unit.poisson, L[0].Tg+5])
                 L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
 
-                if L[0].Tg<200:
-                    L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
-                else:
-                    L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            if L[0].Tg<150:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(150-L[0].Tg))/150, 150])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(175-L[0].Tg))/175, 175])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            elif (L[0].Tg>=150)&(L[0].Tg<175):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(175-L[0].Tg))/175, 175])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            elif (L[0].Tg>=175)&(L[0].Tg<200):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            elif (L[0].Tg>=200)&(L[0].Tg<260):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            else:
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
         
         for i in range(model.n-1):
             L.append(Layer('Cu', 0.001*float(list_Thickness[2*i+1].get()), float(list_Modulus[2*i+1].get()), float(list_CTE[2*i+1].get()), float(list_Poisson[2*i+1].get()), float(list_Density[2*i+1].get()), list_Fill[i].get()))
@@ -2031,21 +2239,32 @@ def btnCalcClick():
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
-
-                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
                 else:
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
-
-                    if L[2*i+2].Tg<200:
-                        L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
-                    else:
-                        L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
+                
+                if L[2*i+2].Tg<150:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(150-L[2*i+2].Tg))/150, 150])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                else:
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get()))
         L[2*model.n-1].unit.portion=float(list_Portion_unit[model.n].get())*0.01
@@ -2070,21 +2289,33 @@ def btnCalcClick():
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, 250])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
-
-                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
             else:
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg-5])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2+10**(int(math.log10(L[2*model.n].unit.modulus2))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg+5])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
+            
+            if L[2*model.n].Tg<150:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(150-L[2*model.n].Tg))/150, 150])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            elif (L[2*model.n].Tg>=150)&(L[2*model.n].Tg<175):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            elif (L[2*model.n].Tg>=175)&(L[2*model.n].Tg<200):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            elif (L[2*model.n].Tg>=200)&(L[2*model.n].Tg<260):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            else:
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
 
-                if L[2*model.n].Tg<200:
-                    L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
-                else:
-                    L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
 
         for i in range(model.n):
             if L[2*i+1].fill=='up':
@@ -2100,21 +2331,32 @@ def btnCalcClick():
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
-
-                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
                 else:
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i].Tg-5])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i].Tg+5])
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
 
-                    if L[2*i].Tg<200:
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
-                    else:
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                if L[2*i].Tg<150:
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(150-L[2*i].Tg))/150, 150])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(175-L[2*i].Tg))/175, 175])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                elif (L[2*i].Tg>=150)&(L[2*i].Tg<175):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(175-L[2*i].Tg))/175, 175])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                elif (L[2*i].Tg>=175)&(L[2*i].Tg<200):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                elif (L[2*i].Tg>=200)&(L[2*i].Tg<260):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                else:
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
 
             elif L[2*i+1].fill=='down':
                 L[2*i+1].unit.modulus = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus * (1-L[2*i+1].unit.portion)
@@ -2129,21 +2371,32 @@ def btnCalcClick():
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
-
-                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
                 else:
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg-5])
                     #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2+10**(int(math.log10(L[2*i+1].unit.modulus2))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg+5])
                     L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
-
-                    if L[2*i+2].Tg<200:
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
-                    else:
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
-                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                
+                if L[2*i+2].Tg<150:
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(150-L[2*i+2].Tg))/150, 150])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                    L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                else:
+                    L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
 
             
         label_Modulus_unit.place(x=584,y=200,width=47,height=35)    #col10->9 584
@@ -2232,13 +2485,9 @@ def btnCalcClick():
                 L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, 250])
                 L[0].unit.Elastic.append([L[0].unit.modulus2, L[0].unit.poisson, 260])
 
-                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
-
                 L[0].dummy.Elastic.append([L[0].dummy.modulus, L[0].dummy.poisson, 25])
                 L[0].dummy.Elastic.append([L[0].dummy.modulus-10**(int(math.log10(L[0].dummy.modulus))-1), L[0].dummy.poisson, 250])
                 L[0].dummy.Elastic.append([L[0].dummy.modulus2, L[0].dummy.poisson, 260])
-
-                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
             else:
                 L[0].unit.Elastic.append([L[0].unit.modulus, L[0].unit.poisson, 25])
                 L[0].unit.Elastic.append([L[0].unit.modulus-10**(int(math.log10(L[0].unit.modulus))-1), L[0].unit.poisson, L[0].Tg-5])
@@ -2249,21 +2498,51 @@ def btnCalcClick():
                 L[0].dummy.Elastic.append([L[0].dummy.modulus-10**(int(math.log10(L[0].dummy.modulus))-1), L[0].dummy.poisson, L[0].Tg-5])
                 L[0].dummy.Elastic.append([L[0].dummy.modulus2+10**(int(math.log10(L[0].dummy.modulus2))-1), L[0].dummy.poisson, L[0].Tg+5])
                 L[0].dummy.Elastic.append([L[0].dummy.modulus2, L[0].dummy.poisson, 260])
+            
+            if L[0].Tg<150:
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(150-L[0].Tg))/150, 150])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(175-L[0].Tg))/175, 175])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(200-L[0].Tg))/200, 200])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
 
-                if L[0].Tg<200:
-                    L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(150-L[0].Tg))/150, 150])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(175-L[0].Tg))/175, 175])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
 
-                    L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
-                    L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(200-L[0].Tg))/200, 200])
-                    L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
-                else:
-                    L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
-                    L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+            elif (L[0].Tg>=150)&(L[0].Tg<175):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(175-L[0].Tg))/175, 175])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
 
-                    L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
-                    L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(175-L[0].Tg))/175, 175])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(200-L[0].Tg))/200, 200])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+
+            elif (L[0].Tg>=175)&(L[0].Tg<200):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(200-L[0].Tg))/200, 200])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(200-L[0].Tg))/200, 200])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+                
+            elif (L[0].Tg>=200)&(L[0].Tg<260):
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
+                L[0].unit.Expansion.append([(L[0].unit.cte*L[0].Tg+L[0].unit.cte2*(260-L[0].Tg))/260, 260])
+
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                L[0].dummy.Expansion.append([(L[0].dummy.cte*L[0].Tg+L[0].dummy.cte2*(260-L[0].Tg))/260, 260])
+
+            else:
+                L[0].dummy.Expansion.append([L[0].dummy.cte, L[0].Tg])
+                
+                L[0].unit.Expansion.append([L[0].unit.cte, L[0].Tg])
                 
 
         for i in range(model.n-1):
@@ -2281,21 +2560,56 @@ def btnCalcClick():
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
-
-                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
                 else:
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
                     L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+                
+                if L[2*i+2].Tg<150:
+                    L[2*i+2].dummy.Expansion.append([L[2*i+2].dummy.cte, L[2*i+2].Tg])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(150-L[2*i+2].Tg))/150, 150])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
 
-                    if L[2*i+2].Tg<200:
-                        L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
-                    else:
-                        L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                        L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(150-L[2*i+2].Tg))/150, 150])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                    L[2*i+2].dummy.Expansion.append([L[2*i+2].dummy.cte, L[2*i+2].Tg])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(175-L[2*i+2].Tg))/175, 175])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                    L[2*i+2].dummy.Expansion.append([L[2*i+2].dummy.cte, L[2*i+2].Tg])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+                    
+                elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                    L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                    L[2*i+2].dummy.Expansion.append([L[2*i+2].dummy.cte, L[2*i+2].Tg])
+                    L[2*i+2].dummy.Expansion.append([(L[2*i+2].dummy.cte*L[2*i+2].Tg+L[2*i+2].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                else:
+                    L[2*i+2].dummy.Expansion.append([L[2*i+2].dummy.cte, L[2*i+2].Tg])
+                    
+                    L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get()))
         L[2*model.n-1].unit.portion=float(list_Portion_unit[model.n].get())*0.01
@@ -2330,13 +2644,10 @@ def btnCalcClick():
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, 250])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus2, L[2*model.n].unit.poisson, 260])
 
-                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
-
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson, 25])
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus-10**(int(math.log10(L[2*model.n].dummy.modulus))-1), L[2*model.n].dummy.poisson, 250])
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2, L[2*model.n].dummy.poisson, 260])
 
-                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
             else:
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus, L[2*model.n].unit.poisson, 25])
                 L[2*model.n].unit.Elastic.append([L[2*model.n].unit.modulus-10**(int(math.log10(L[2*model.n].unit.modulus))-1), L[2*model.n].unit.poisson, L[2*model.n].Tg-5])
@@ -2347,21 +2658,51 @@ def btnCalcClick():
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus-10**(int(math.log10(L[2*model.n].dummy.modulus))-1), L[2*model.n].dummy.poisson, L[2*model.n].Tg-5])
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2+10**(int(math.log10(L[2*model.n].dummy.modulus2))-1), L[2*model.n].dummy.poisson, L[2*model.n].Tg+5])
                 L[2*model.n].dummy.Elastic.append([L[2*model.n].dummy.modulus2, L[2*model.n].dummy.poisson, 260])
+            
+            if L[2*model.n].Tg<150:
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(150-L[2*model.n].Tg))/150, 150])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
 
-                if L[2*model.n].Tg<200:
-                    L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(150-L[2*model.n].Tg))/150, 150])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
 
-                    L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
-                    L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(200-L[2*model.n].Tg))/200, 200])
-                    L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
-                else:
-                    L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
-                    L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+            elif (L[2*model.n].Tg>=150)&(L[2*model.n].Tg<175):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
 
-                    L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
-                    L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(175-L[2*model.n].Tg))/175, 175])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+            elif (L[2*model.n].Tg>=175)&(L[2*model.n].Tg<200):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(200-L[2*model.n].Tg))/200, 200])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+                
+            elif (L[2*model.n].Tg>=200)&(L[2*model.n].Tg<260):
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
+                L[2*model.n].unit.Expansion.append([(L[2*model.n].unit.cte*L[2*model.n].Tg+L[2*model.n].unit.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                L[2*model.n].dummy.Expansion.append([(L[2*model.n].dummy.cte*L[2*model.n].Tg+L[2*model.n].dummy.cte2*(260-L[2*model.n].Tg))/260, 260])
+
+            else:
+                L[2*model.n].dummy.Expansion.append([L[2*model.n].dummy.cte, L[2*model.n].Tg])
+                
+                L[2*model.n].unit.Expansion.append([L[2*model.n].unit.cte, L[2*model.n].Tg])
 
         for i in range(model.n):
             if L[2*i+1].fill=='up':
@@ -2374,7 +2715,7 @@ def btnCalcClick():
                 L[2*i+1].dummy.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i].cte * L[2*i].modulus * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus
                 L[2*i+1].dummy.poisson = L[2*i+1].poisson * L[2*i+1].dummy.portion + L[2*i].poisson * (1-L[2*i+1].dummy.portion)
                 L[2*i+1].dummy.density = L[2*i+1].density * L[2*i+1].dummy.portion + L[2*i].density * (1-L[2*i+1].dummy.portion)
-                if list_No[2*i+1]['text']!='':
+                if list_No[2*i]['text']!='':
                     L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].modulus2 * (1-L[2*i+1].unit.portion)
                     L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i].cte2 * L[2*i].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
 
@@ -2386,13 +2727,9 @@ def btnCalcClick():
                         #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
                         L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
 
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
-
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, 250])
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
-
-                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
                     else:
                         L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                         #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i].Tg-5])
@@ -2403,21 +2740,52 @@ def btnCalcClick():
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, L[2*i].Tg-5])
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2+10**(int(math.log10(L[2*i+1].dummy.modulus2))-1), L[2*i+1].dummy.poisson, L[2*i].Tg+5])
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+                    
+                    if L[2*i].Tg<150:
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(150-L[2*i].Tg))/150, 150])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(175-L[2*i].Tg))/175, 175])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
 
-                        if L[2*i].Tg<200:
-                            L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(150-L[2*i].Tg))/150, 150])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(175-L[2*i].Tg))/175, 175])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
 
-                            L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(200-L[2*i].Tg))/200, 200])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
-                        else:
-                            L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+                    elif (L[2*i].Tg>=150)&(L[2*i].Tg<175):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(175-L[2*i].Tg))/175, 175])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
 
-                            L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(175-L[2*i].Tg))/175, 175])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+
+                    elif (L[2*i].Tg>=175)&(L[2*i].Tg<200):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(200-L[2*i].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+                        
+                    elif (L[2*i].Tg>=200)&(L[2*i].Tg<260):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i].Tg+L[2*i+1].unit.cte2*(260-L[2*i].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i].Tg+L[2*i+1].dummy.cte2*(260-L[2*i].Tg))/260, 260])
+
+                    else:
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i].Tg])
+                        
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i].Tg])
+
 
             elif L[2*i+1].fill=='down':
                 L[2*i+1].unit.modulus = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus * (1-L[2*i+1].unit.portion)
@@ -2429,7 +2797,7 @@ def btnCalcClick():
                 L[2*i+1].dummy.cte = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].dummy.portion + L[2*i+2].cte * L[2*i+2].modulus * (1-L[2*i+1].dummy.portion)) / L[2*i+1].dummy.modulus
                 L[2*i+1].dummy.poisson = L[2*i+1].poisson * L[2*i+1].dummy.portion + L[2*i+2].poisson * (1-L[2*i+1].dummy.portion)
                 L[2*i+1].dummy.density = L[2*i+1].density * L[2*i+1].dummy.portion + L[2*i+2].density * (1-L[2*i+1].dummy.portion)
-                if list_No[2*i+1]['text']!='':
+                if list_No[2*i+2]['text']!='':
                     L[2*i+1].unit.modulus2 = L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)
                     L[2*i+1].unit.cte2 = (L[2*i+1].cte * L[2*i+1].modulus * L[2*i+1].unit.portion + L[2*i+2].cte2 * L[2*i+2].modulus2 * (1-L[2*i+1].unit.portion)) / L[2*i+1].unit.modulus2
 
@@ -2441,13 +2809,9 @@ def btnCalcClick():
                         #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, 250])
                         L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus2, L[2*i+1].unit.poisson, 260])
 
-                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
-
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus, L[2*i+1].dummy.poisson, 25])
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, 250])
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
-
-                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
                     else:
                         L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus, L[2*i+1].unit.poisson, 25])
                         #L[2*i+1].unit.Elastic.append([L[2*i+1].unit.modulus-10**(int(math.log10(L[2*i+1].unit.modulus))-1), L[2*i+1].unit.poisson, L[2*i+2].Tg-5])
@@ -2458,21 +2822,51 @@ def btnCalcClick():
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus-10**(int(math.log10(L[2*i+1].dummy.modulus))-1), L[2*i+1].dummy.poisson, L[2*i+2].Tg-5])
                         #L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2+10**(int(math.log10(L[2*i+1].dummy.modulus2))-1), L[2*i+1].dummy.poisson, L[2*i+2].Tg+5])
                         L[2*i+1].dummy.Elastic.append([L[2*i+1].dummy.modulus2, L[2*i+1].dummy.poisson, 260])
+                    
+                    if L[2*i+2].Tg<150:
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(150-L[2*i+2].Tg))/150, 150])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(175-L[2*i+2].Tg))/175, 175])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
 
-                        if L[2*i+2].Tg<200:
-                            L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(150-L[2*i+2].Tg))/150, 150])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
 
-                            L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
-                        else:
-                            L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
-                            L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+                    elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
 
-                            L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
-                            L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(175-L[2*i+2].Tg))/175, 175])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                    elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(200-L[2*i+2].Tg))/200, 200])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+                        
+                    elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
+                        L[2*i+1].unit.Expansion.append([(L[2*i+1].unit.cte*L[2*i+2].Tg+L[2*i+1].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        L[2*i+1].dummy.Expansion.append([(L[2*i+1].dummy.cte*L[2*i+2].Tg+L[2*i+1].dummy.cte2*(260-L[2*i+2].Tg))/260, 260])
+
+                    else:
+                        L[2*i+1].dummy.Expansion.append([L[2*i+1].dummy.cte, L[2*i+2].Tg])
+                        
+                        L[2*i+1].unit.Expansion.append([L[2*i+1].unit.cte, L[2*i+2].Tg])
 
         label_Modulus_unit.place(x=631,y=200,width=47,height=35)    #col10
         label_CTE_unit.place(x=678,y=200,width=47,height=35)        #col11
@@ -2626,21 +3020,32 @@ def btnCalcClick():
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus, L[0].section[row][col].poisson, 25])
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus-10**(int(math.log10(L[0].section[row][col].modulus))-1), L[0].section[row][col].poisson, 250])
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2, L[0].section[row][col].poisson, 260])
-
-                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
                         else:
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus, L[0].section[row][col].poisson, 25])
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus-10**(int(math.log10(L[0].section[row][col].modulus))-1), L[0].section[row][col].poisson, L[0].Tg-5])
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2+10**(int(math.log10(L[0].section[row][col].modulus2))-1), L[0].section[row][col].poisson, L[0].Tg+5])
                             L[0].section[row][col].Elastic.append([L[0].section[row][col].modulus2, L[0].section[row][col].poisson, 260])
-
-                            if L[0].Tg<200:
-                                L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
-                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(200-L[0].Tg))/200, 200])
-                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
-                            else:
-                                L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
-                                L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                        
+                        if L[0].Tg<150:
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(150-L[0].Tg))/150, 150])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(175-L[0].Tg))/175, 175])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(200-L[0].Tg))/200, 200])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                        elif (L[0].Tg>=150)&(L[0].Tg<175):
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(175-L[0].Tg))/175, 175])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(200-L[0].Tg))/200, 200])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                        elif (L[0].Tg>=175)&(L[0].Tg<200):
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(200-L[0].Tg))/200, 200])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                        elif (L[0].Tg>=200)&(L[0].Tg<260):
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
+                            L[0].section[row][col].Expansion.append([(L[0].section[row][col].cte*L[0].Tg+L[0].section[row][col].cte2*(260-L[0].Tg))/260, 260])
+                        else:
+                            L[0].section[row][col].Expansion.append([L[0].section[row][col].cte, L[0].Tg])
 
 
         for i in range(model.n-1):
@@ -2667,21 +3072,33 @@ def btnCalcClick():
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, 250])
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
-
-                L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
             else:
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus, L[2*i+2].poisson, 25])
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus-10**(int(math.log10(L[2*i+2].modulus))-1), L[2*i+2].poisson, L[2*i+2].Tg-5])
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2+10**(int(math.log10(L[2*i+2].modulus2))-1), L[2*i+2].poisson, L[2*i+2].Tg+5])
                 L[2*i+2].unit.Elastic.append([L[2*i+2].modulus2, L[2*i+2].poisson, 260])
+            
+            if L[2*i+2].Tg<150:
+                L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(150-L[2*i+2].Tg))/150, 150])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+            elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(175-L[2*i+2].Tg))/175, 175])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+            elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(200-L[2*i+2].Tg))/200, 200])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+            elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
+                L[2*i+2].unit.Expansion.append([(L[2*i+2].unit.cte*L[2*i+2].Tg+L[2*i+2].unit.cte2*(260-L[2*i+2].Tg))/260, 260])
+            else:
+                L[2*i+2].unit.Expansion.append([L[2*i+2].unit.cte, L[2*i+2].Tg])
 
-                if L[2*i+2].Tg<200:
-                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(200-L[2*i+2].Tg))/200, 200])
-                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
-                else:
-                    L[2*i+2].unit.Expansion.append([L[2*i+2].cte, L[2*i+2].Tg])
-                    L[2*i+2].unit.Expansion.append([(L[2*i+2].cte*L[2*i+2].Tg+L[2*i+2].cte2*(260-L[2*i+2].Tg))/260, 260])
 
         L.append(Layer('Cu', 0.001*float(list_Thickness[2*model.n-1].get()), float(list_Modulus[2*model.n-1].get()), float(list_CTE[2*model.n-1].get()), float(list_Poisson[2*model.n-1].get()), float(list_Density[2*model.n-1].get()), list_Fill[model.n-1].get(), model.row, model.col))
         with open(model.folder+'/L'+str(model.n)+'.txt') as f:
@@ -2741,21 +3158,32 @@ def btnCalcClick():
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus, L[2*model.n].section[row][col].poisson, 25])
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus-10**(int(math.log10(L[2*model.n].section[row][col].modulus))-1), L[2*model.n].section[row][col].poisson, 250])
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2, L[2*model.n].section[row][col].poisson, 260])
-
-                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
                         else:
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus, L[2*model.n].section[row][col].poisson, 25])
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus-10**(int(math.log10(L[2*model.n].section[row][col].modulus))-1), L[2*model.n].section[row][col].poisson, L[2*model.n].Tg-5])
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2+10**(int(math.log10(L[2*model.n].section[row][col].modulus2))-1), L[2*model.n].section[row][col].poisson, L[2*model.n].Tg+5])
                             L[2*model.n].section[row][col].Elastic.append([L[2*model.n].section[row][col].modulus2, L[2*model.n].section[row][col].poisson, 260])
-
-                            if L[2*model.n].Tg<200:
-                                L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
-                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(200-L[2*model.n].Tg))/200, 200])
-                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
-                            else:
-                                L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
-                                L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                        
+                        if L[2*model.n].Tg<150:
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(150-L[2*model.n].Tg))/150, 150])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(175-L[2*model.n].Tg))/175, 175])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(200-L[2*model.n].Tg))/200, 200])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                        elif (L[2*model.n].Tg>=150)&(L[2*model.n].Tg<175):
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(175-L[2*model.n].Tg))/175, 175])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(200-L[2*model.n].Tg))/200, 200])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                        elif (L[2*model.n].Tg>=175)&(L[2*model.n].Tg<200):
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(200-L[2*model.n].Tg))/200, 200])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                        elif (L[2*model.n].Tg>=200)&(L[2*model.n].Tg<260):
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
+                            L[2*model.n].section[row][col].Expansion.append([(L[2*model.n].section[row][col].cte*L[2*model.n].Tg+L[2*model.n].section[row][col].cte2*(260-L[2*model.n].Tg))/260, 260])
+                        else:
+                            L[2*model.n].section[row][col].Expansion.append([L[2*model.n].section[row][col].cte, L[2*model.n].Tg])
         
         for i in range(model.n):
             for row in range(model.row):
@@ -2773,21 +3201,33 @@ def btnCalcClick():
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, 250])
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
-
-                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
                         else:
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, L[2*i].Tg-5])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2+10**(int(math.log10(L[2*i+1].section[row][col].modulus2))-1), L[2*i+1].section[row][col].poisson, L[2*i].Tg+5])
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
+                        
+                        if L[2*i].Tg<150:
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(150-L[2*i].Tg))/150, 150])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(175-L[2*i].Tg))/175, 175])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+                        elif (L[2*i].Tg>=150)&(L[2*i].Tg<175):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(175-L[2*i].Tg))/175, 175])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+                        elif (L[2*i].Tg>=175)&(L[2*i].Tg<200):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+                        elif (L[2*i].Tg>=200)&(L[2*i].Tg<260):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
+                        else:
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
 
-                            if L[2*i].Tg<200:
-                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i].Tg))/200, 200])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
-                            else:
-                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i].Tg])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i].Tg))/260, 260])
 
                     elif L[2*i+1].fill=='down':
                         L[2*i+1].section[row][col].modulus = L[2*i+1].modulus * L[2*i+1].section[row][col].portion + L[2*i+2].modulus * (1-L[2*i+1].section[row][col].portion)
@@ -2802,21 +3242,32 @@ def btnCalcClick():
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, 250])
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
-
-                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
                         else:
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus, L[2*i+1].section[row][col].poisson, 25])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus-10**(int(math.log10(L[2*i+1].section[row][col].modulus))-1), L[2*i+1].section[row][col].poisson, L[2*i+2].Tg-5])
                             #L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2+10**(int(math.log10(L[2*i+1].section[row][col].modulus2))-1), L[2*i+1].section[row][col].poisson, L[2*i+2].Tg+5])
                             L[2*i+1].section[row][col].Elastic.append([L[2*i+1].section[row][col].modulus2, L[2*i+1].section[row][col].poisson, 260])
-
-                            if L[2*i+2].Tg<200:
-                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i+2].Tg))/200, 200])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
-                            else:
-                                L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
-                                L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                        
+                        if L[2*i+2].Tg<150:
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(150-L[2*i+2].Tg))/150, 150])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(175-L[2*i+2].Tg))/175, 175])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i+2].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                        elif (L[2*i+2].Tg>=150)&(L[2*i+2].Tg<175):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(175-L[2*i+2].Tg))/175, 175])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i+2].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                        elif (L[2*i+2].Tg>=175)&(L[2*i+2].Tg<200):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(200-L[2*i+2].Tg))/200, 200])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                        elif (L[2*i+2].Tg>=200)&(L[2*i+2].Tg<260):
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
+                            L[2*i+1].section[row][col].Expansion.append([(L[2*i+1].section[row][col].cte*L[2*i+2].Tg+L[2*i+1].section[row][col].cte2*(260-L[2*i+2].Tg))/260, 260])
+                        else:
+                            L[2*i+1].section[row][col].Expansion.append([L[2*i+1].section[row][col].cte, L[2*i+2].Tg])
 
         if len(list_Modulus_unit)>0:
             for i in range(len(list_Modulus_unit)):
