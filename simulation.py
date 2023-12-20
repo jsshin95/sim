@@ -6995,39 +6995,41 @@ def SaveInput(dir):
     writer.writerow(['ModelType',model.type,'#Layer',model.n])
     if model.type=='unit':
         writer.writerow(['x',str(model.x),'y',str(model.y)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion','Modulus2','CTE2','Tg','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)'])
         for i in range(2*model.n+1):
             if i==0: #SR_top
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
             elif i==2*model.n: #SR_btm
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get(),'',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get()])
     elif (model.type=='1block')|(model.type=='2block'):
         if model.type=='1block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b)])
         elif model.type=='2block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b),'c',str(model.c)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)','Modulus(dummy)','CTE(dummy)','Poisson(dummy)','Density(dummy)'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)','Modulus2','CTE2','Tg','Modulus(unit)','CTE(unit)','Poisson(unit)','Density(unit)','Modulus(dummy)','CTE(dummy)','Poisson(dummy)','Density(dummy)'])
         for i in range(2*model.n+1):
             if i==0: #SR_top
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Portion_dummy[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[i].get(),list_Portion_dummy[i].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
             elif i==2*model.n: #SR_btm
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get(),'',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','','',list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','','',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get(),list_Modulus_unit[i].get(),list_CTE_unit[i].get(),list_Poisson_unit[i].get(),list_Density_unit[i].get(),list_Modulus_dummy[i].get(),list_CTE_dummy[i].get(),list_Poisson_dummy[i].get(),list_Density_dummy[i].get()])
     elif model.type=='meshed':
         writer.writerow(['x',str(model.x),'y',str(model.y),'row',str(model.row),'col',str(model.col),'folder',str(model.folder)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Modulus2','CTE2','Tg'])
         for i in range(2*model.n+1):
-            if (i==0)|(i==2*model.n): #SR
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+            if (i==0): #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
     else:
         messagebox.showwarning(title="error (save input)", message="error model type")
         f.close()
@@ -7053,39 +7055,41 @@ def btnSaveInput():
     writer.writerow(['ModelType',model.type,'#Layer',model.n])
     if model.type=='unit':
         writer.writerow(['x',str(model.x),'y',str(model.y)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion','Modulus2','CTE2','Tg'])
         for i in range(2*model.n+1):
             if i==0: #SR_top
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i==2*model.n: #SR_btm
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
     elif (model.type=='1block')|(model.type=='2block'):
         if model.type=='1block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b)])
         elif model.type=='2block': writer.writerow(['x',str(model.x),'y',str(model.y),'a',str(model.a),'b',str(model.b),'c',str(model.c)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Portion(unit)','Portion(dummy)','Modulus2','CTE2','Tg'])
         for i in range(2*model.n+1):
             if i==0: #SR_top
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get(),list_Portion_dummy[0].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[0].get(),list_Portion_dummy[0].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i==2*model.n: #SR_btm
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Portion_unit[model.n+1].get(),list_Portion_dummy[model.n+1].get(),list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Portion_unit[int((i+1)/2)].get(),list_Portion_dummy[int((i+1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'','','',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
     elif model.type=='meshed':
         writer.writerow(['x',str(model.x),'y',str(model.y),'row',str(model.row),'col',str(model.col),'folder',str(model.folder)])
-        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill'])
+        writer.writerow(['No.','Layer','Thickness','Modulus','CTE','Poisson','Density','Fill','Modulus2','CTE2','Tg'])
         for i in range(2*model.n+1):
-            if (i==0)|(i==2*model.n): #SR
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+            if (i==0): #SR_top
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
+            elif i==2*model.n: #SR_btm
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
             elif i%2==1: #Cu
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),list_Fill[int((i-1)/2)].get(),list_Modulus2[i].get(),list_CTE2[i].get()])
             else: #PPG
-                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get()])
+                writer.writerow([str(i),list_Layer[i]['text'],list_Thickness[i].get(),list_Modulus[i].get(),list_CTE[i].get(),list_Poisson[i].get(),list_Density[i].get(),'',list_Modulus2[i].get(),list_CTE2[i].get(),list_Tg[i].get()])
     else:
         messagebox.showwarning(title="error (save input)", message="error model type")
         f.close()
@@ -7099,9 +7103,14 @@ def btnLoadInput():
         line1=fcheck.readline().strip().split(sep=',')
         strType=line1[1]
         strLayer=line1[3]
-        if strType!=model.type:
-            messagebox.showwarning(title="error", message="model type 불일치")
-            return
+        if (model.type=='1block')|(model.type=='2block'):
+            if (strType!='1block')&(strType!='2block'):
+                messagebox.showwarning(title="error", message="model type 불일치")
+                return
+        else:
+            if strType!=model.type:
+                messagebox.showwarning(title="error", message="model type 불일치")
+                return
         if int(strLayer)!=model.n:
             messagebox.showwarning(title="error", message="층 수 불일치")
             return
@@ -7127,6 +7136,13 @@ def btnLoadInput():
             list_Poisson[i].insert(0,dfi.iloc[i].values[5])
             list_Density[i].delete(0,tk.END)
             list_Density[i].insert(0,dfi.iloc[i].values[6])
+            list_Modulus2[i].delete(0,tk.END)
+            list_Modulus2[i].insert(0,dfi.iloc[i].values[9])
+            list_CTE2[i].delete(0,tk.END)
+            list_CTE2[i].insert(0,dfi.iloc[i].values[10])
+            if i%2==0:
+                list_Tg[i].delete(0,tk.END)
+                list_Tg[i].insert(0,dfi.iloc[i].values[11])
         for i in range(model.n):
             list_Fill[i].set(dfi.iloc[2*i+1].values[7])
             list_Portion_unit[i+1].delete(0,tk.END)
@@ -7147,6 +7163,13 @@ def btnLoadInput():
             list_Poisson[i].insert(0,dfi.iloc[i].values[5])
             list_Density[i].delete(0,tk.END)
             list_Density[i].insert(0,dfi.iloc[i].values[6])
+            list_Modulus2[i].delete(0,tk.END)
+            list_Modulus2[i].insert(0,dfi.iloc[i].values[10])
+            list_CTE2[i].delete(0,tk.END)
+            list_CTE2[i].insert(0,dfi.iloc[i].values[11])
+            if i%2==0:
+                list_Tg[i].delete(0,tk.END)
+                list_Tg[i].insert(0,dfi.iloc[i].values[12])
         for i in range(model.n):
             list_Fill[i].set(dfi.iloc[2*i+1].values[7])
             list_Portion_unit[i+1].delete(0,tk.END)
@@ -7173,6 +7196,13 @@ def btnLoadInput():
             list_Poisson[i].insert(0,dfi.iloc[i].values[5])
             list_Density[i].delete(0,tk.END)
             list_Density[i].insert(0,dfi.iloc[i].values[6])
+            list_Modulus2[i].delete(0,tk.END)
+            list_Modulus2[i].insert(0,dfi.iloc[i].values[8])
+            list_CTE2[i].delete(0,tk.END)
+            list_CTE2[i].insert(0,dfi.iloc[i].values[9])
+            if i%2==0:
+                list_Tg[i].delete(0,tk.END)
+                list_Tg[i].insert(0,dfi.iloc[i].values[10])
         for i in range(model.n):
             list_Fill[i].set(dfi.iloc[2*i+1].values[7])
     return
@@ -7229,7 +7259,7 @@ list_El_Temp_dummy=[]
 
 win=tk.Tk()
 win.geometry('1300x700+50+50')
-win.title("Warpage & Material Properties Simulation ver.2.0")
+win.title("Warpage & Material Properties Simulation ver.2.1")
 
 try:
     df=pd.read_csv('data.csv')
