@@ -4170,11 +4170,34 @@ def writescript(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='SR_top')\n")
         f.write("myModel.materials['SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='SR_btm')\n")
         f.write("myModel.materials['SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4246,20 +4269,66 @@ def writescript(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4352,20 +4421,66 @@ def writescript(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4446,12 +4561,34 @@ def writescript(): #unit, 1block, 2block, meshed
                 f.write("myModel.Material(name='SR_top_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_top_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[0].section[i][j].density))
                 f.write("myModel.materials['SR_top_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[0].section[i][j].modulus, L[0].section[i][j].poisson))
-                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                #f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[0].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[0].section[i][j].Expansion[k][0])+'e-06,'+str(L[0].section[i][j].Expansion[k][1])+')'
+                    if len(L[0].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[0].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
                 f.write("myModel.Material(name='SR_btm_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_btm_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[2*model.n].section[i][j].density))
                 f.write("myModel.materials['SR_btm_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[2*model.n].section[i][j].modulus, L[2*model.n].section[i][j].poisson))
-                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                #f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[2*model.n].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[2*model.n].section[i][j].Expansion[k][0])+'e-06,'+str(L[2*model.n].section[i][j].Expansion[k][1])+')'
+                    if len(L[2*model.n].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[2*model.n].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
         for i in range(model.n):    
             for row in range(model.row):
@@ -4553,6 +4690,12 @@ def writescript(): #unit, 1block, 2block, meshed
         f.write("myModel.boundaryConditions['center-DISP'].deactivate('Step-2')\n")
         f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(150.0, ), stepName='Step-2')\n")
         f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(25.0, ), stepName='Step-3')\n")
+
+        ttot=0
+        for i in range(2*model.n+1):
+            ttot=ttot+L[i].thickness
+        
+        f.write("myModel.rootAssembly.translate(instanceList=('Part-1-1', ), vector=(0.0,0.0,%f))\n" % (ttot/2))
     
     f.write("myModel.rootAssembly.regenerate()\n")
     f.write("mdb.models.changeKey(fromName='Model-1', toName='POR')\n")
@@ -4734,11 +4877,34 @@ def writescriptCTE(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='SR_top')\n")
         f.write("myModel.materials['SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='SR_btm')\n")
         f.write("myModel.materials['SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4799,20 +4965,66 @@ def writescriptCTE(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4891,20 +5103,66 @@ def writescriptCTE(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -4981,12 +5239,34 @@ def writescriptCTE(): #unit, 1block, 2block, meshed
                 f.write("myModel.Material(name='SR_top_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_top_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[0].section[i][j].density))
                 f.write("myModel.materials['SR_top_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[0].section[i][j].modulus, L[0].section[i][j].poisson))
-                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                #f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[0].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[0].section[i][j].Expansion[k][0])+'e-06,'+str(L[0].section[i][j].Expansion[k][1])+')'
+                    if len(L[0].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[0].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
                 f.write("myModel.Material(name='SR_btm_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_btm_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[2*model.n].section[i][j].density))
                 f.write("myModel.materials['SR_btm_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[2*model.n].section[i][j].modulus, L[2*model.n].section[i][j].poisson))
-                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                #f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[2*model.n].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[2*model.n].section[i][j].Expansion[k][0])+'e-06,'+str(L[2*model.n].section[i][j].Expansion[k][1])+')'
+                    if len(L[2*model.n].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[2*model.n].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
         for i in range(model.n):    
             for row in range(model.row):
@@ -5470,11 +5750,34 @@ def writescriptShell(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='SR_top')\n")
         f.write("myModel.materials['SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='SR_btm')\n")
         f.write("myModel.materials['SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -5546,20 +5849,66 @@ def writescriptShell(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -5652,20 +6001,66 @@ def writescriptShell(): #unit, 1block, 2block, meshed
         f.write("myModel.Material(name='U_SR_top')\n")
         f.write("myModel.materials['U_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].unit.density))
         f.write("myModel.materials['U_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].unit.modulus, L[0].unit.poisson))
-        f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        #f.write("myModel.materials['U_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].unit.cte))
+        strtemp='('
+        for i in range(len(L[0].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[0].unit.Expansion[i][0])+'e-06,'+str(L[0].unit.Expansion[i][1])+')'
+            if len(L[0].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='U_SR_btm')\n")
         f.write("myModel.materials['U_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].unit.density))
         f.write("myModel.materials['U_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].unit.modulus, L[2*model.n].unit.poisson))
-        f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        #f.write("myModel.materials['U_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].unit.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].unit.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].unit.Expansion[i][0])+'e-06,'+str(L[2*model.n].unit.Expansion[i][1])+')'
+            if len(L[2*model.n].unit.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].unit.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['U_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         f.write("myModel.Material(name='D_SR_top')\n")
         f.write("myModel.materials['D_SR_top'].Density(table=((%fe-09,),))\n" % (L[0].dummy.density))
         f.write("myModel.materials['D_SR_top'].Elastic(table=((%f,%f),))\n" % (L[0].dummy.modulus, L[0].dummy.poisson))
-        f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        #f.write("myModel.materials['D_SR_top'].Expansion(table=((%fe-06,),))\n" % (L[0].dummy.cte))
+        strtemp='('
+        for i in range(len(L[0].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[0].dummy.Expansion[i][0])+'e-06,'+str(L[0].dummy.Expansion[i][1])+')'
+            if len(L[0].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[0].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_top'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
+
         f.write("myModel.Material(name='D_SR_btm')\n")
         f.write("myModel.materials['D_SR_btm'].Density(table=((%fe-09,),))\n" % (L[2*model.n].dummy.density))
         f.write("myModel.materials['D_SR_btm'].Elastic(table=((%f,%f),))\n" % (L[2*model.n].dummy.modulus, L[2*model.n].dummy.poisson))
-        f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        #f.write("myModel.materials['D_SR_btm'].Expansion(table=((%fe-06,),))\n" % (L[2*model.n].dummy.cte))
+        strtemp='('
+        for i in range(len(L[2*model.n].dummy.Expansion)):
+            strtemp=strtemp+'('+str(L[2*model.n].dummy.Expansion[i][0])+'e-06,'+str(L[2*model.n].dummy.Expansion[i][1])+')'
+            if len(L[2*model.n].dummy.Expansion)==1:
+                strtemp=strtemp+',)'
+                break
+            if i==(len(L[2*model.n].dummy.Expansion)-1):
+                strtemp=strtemp+')'
+            else:
+                strtemp=strtemp+','
+        f.write("myModel.materials['D_SR_btm'].Expansion(table=%s, temperatureDependency=ON)\n" % (strtemp))
 
         for i in range(model.n-1):
             f.write("myModel.Material(name='PPG%d')\n" % (i+1))
@@ -5746,12 +6141,34 @@ def writescriptShell(): #unit, 1block, 2block, meshed
                 f.write("myModel.Material(name='SR_top_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_top_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[0].section[i][j].density))
                 f.write("myModel.materials['SR_top_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[0].section[i][j].modulus, L[0].section[i][j].poisson))
-                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                #f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[0].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[0].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[0].section[i][j].Expansion[k][0])+'e-06,'+str(L[0].section[i][j].Expansion[k][1])+')'
+                    if len(L[0].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[0].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_top_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
                 f.write("myModel.Material(name='SR_btm_%d_%d')\n" % (i,j))
                 f.write("myModel.materials['SR_btm_%d_%d'].Density(table=((%fe-09,),))\n" % (i, j, L[2*model.n].section[i][j].density))
                 f.write("myModel.materials['SR_btm_%d_%d'].Elastic(table=((%f,%f),))\n" % (i, j, L[2*model.n].section[i][j].modulus, L[2*model.n].section[i][j].poisson))
-                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                #f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=((%fe-06,),))\n" % (i, j, L[2*model.n].section[i][j].cte))
+                strtemp='('
+                for k in range(len(L[2*model.n].section[i][j].Expansion)):
+                    strtemp=strtemp+'('+str(L[2*model.n].section[i][j].Expansion[k][0])+'e-06,'+str(L[2*model.n].section[i][j].Expansion[k][1])+')'
+                    if len(L[2*model.n].section[i][j].Expansion)==1:
+                        strtemp=strtemp+',)'
+                        break
+                    if k==(len(L[2*model.n].section[i][j].Expansion)-1):
+                        strtemp=strtemp+')'
+                    else:
+                        strtemp=strtemp+','
+                f.write("myModel.materials['SR_btm_%d_%d'].Expansion(table=%s, temperatureDependency=ON)\n" % (i,j,strtemp))
                 
         for i in range(model.n):    
             for row in range(model.row):
@@ -6860,6 +7277,12 @@ def writescriptHighT(): #수정필요
         for i in range(len(model.step)):
             f.write("myModel.StaticStep(initialInc=0.1, name='Step-%d', previous='Step-%d')\n" % ((i+4),(i+3)))
             f.write("myModel.predefinedFields['Predefined Field-1'].setValuesInStep(magnitudes=(%f, ), stepName='Step-%d')\n" % (model.step[i],(i+4)))
+        
+        ttot=0
+        for i in range(2*model.n+1):
+            ttot=ttot+L[i].thickness
+        
+        f.write("myModel.rootAssembly.translate(instanceList=('Part-1-1', ), vector=(0.0,0.0,%f))\n" % (ttot/2))
     
     f.write("myModel.rootAssembly.regenerate()\n")
     f.write("mdb.models.changeKey(fromName='Model-1', toName='POR')\n")
@@ -7259,7 +7682,7 @@ list_El_Temp_dummy=[]
 
 win=tk.Tk()
 win.geometry('1300x700+50+50')
-win.title("Warpage & Material Properties Simulation ver.2.1")
+win.title("Warpage & Material Properties Simulation ver.2.2")
 
 try:
     df=pd.read_csv('data.csv')
